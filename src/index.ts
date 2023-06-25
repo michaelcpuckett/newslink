@@ -14,4 +14,28 @@ app.get('/', (_: Request, res: Response) => {
   });
 });
 
+app.get('/test', async (_: Request, res: Response) => {
+  const { html } = await import('lit');
+  const { render } = await import('@lit-labs/ssr');
+  const { collectResult } = await import('@lit-labs/ssr/lib/render-result.js');
+
+  const htmlResult = await collectResult(
+    render(html`<!DOCTYPE html>
+      <html>
+        <head>
+          <title>Lit SSR</title>
+        </head>
+        <body>
+          <ssr-test>
+            <template shadowrootmode="open">
+              <h1>Shopping list</h1>
+            </template>
+          </ssr-test>
+        </body>
+      </html>`),
+  );
+
+  return res.setHeader('Content-Type', 'text/html').send(htmlResult);
+});
+
 app.listen(3000, () => console.log('started'));

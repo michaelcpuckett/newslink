@@ -1,0 +1,43 @@
+form {
+  display: grid;
+  gap: 24px;
+}
+
+label {
+  display: grid;
+  gap: 6px;
+}
+
+input,
+textarea {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 12px;
+  display: block;
+  width: 100%;
+  font: inherit;
+  line-height: inherit;
+
+  .is-invalid > & {
+    border-color: red;
+  }
+}
+
+textarea {
+  min-height: 120px;
+}
+
+.label-text {
+  .is-invalid > & {
+    color: red;
+  }
+}
+
+.error-message {
+  display: none;
+  color: red;
+
+  .is-invalid > & {
+    display: block;
+  }
+}

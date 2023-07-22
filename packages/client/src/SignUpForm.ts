@@ -22,6 +22,10 @@ export default class LoginForm extends GenericForm {
       inputElement.matches('[name="email"]'),
     );
 
+    this.nameElement = this.inputElements.find((inputElement) =>
+      inputElement.matches('[name="name"]'),
+    );
+
     this.usernameElement = this.inputElements.find((inputElement) =>
       inputElement.matches('[name="username"]'),
     );

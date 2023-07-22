@@ -6,6 +6,7 @@ import { LOCAL_DOMAIN } from '@activity-kit/utilities';
 import { EntityGetEndpoint } from '@activity-kit/endpoints';
 import UserEntityPage from '../pages/UserEntityPage';
 import '../utils/globals';
+import { HTML_DOCTYPE } from '../utils/globals';
 
 export default async (req: express.Request, res: express.Response) => {
   const endpoint = new EntityGetEndpoint(req.activitypub, {
@@ -14,7 +15,7 @@ export default async (req: express.Request, res: express.Response) => {
   });
   
   const render = async ({...args}: { entity: AP.Actor }) => {
-    return Server.renderToString(<UserEntityPage {...args} user={req.user} />);
+    return HTML_DOCTYPE + Server.renderToString(<UserEntityPage {...args} user={req.user} />);
   };
 
   const result = await endpoint.respond(render).catch((err: Error) => {

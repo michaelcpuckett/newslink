@@ -12,7 +12,7 @@ import { FtpStorageAdapter } from '@activity-kit/storage-ftp';
 import { OutboxPostEndpoint, UserPostEndpoint } from '@activity-kit/endpoints';
 import { Core } from '@activity-kit/core';
 import { DEFAULT_ROUTES, LOCAL_DOMAIN } from '@activity-kit/utilities';
-import './utils/globals';
+import { HTML_DOCTYPE } from './utils/globals';
 
 import handleGetCollectionPage from './endpoints/handleGetCollectionPage';
 import handleGetUserPage from './endpoints/handleGetUserPage';
@@ -67,7 +67,7 @@ import OutboxPageEntityPage from './pages/InboxPageEntityPage';
   });
 
   app.get('/', async (req: express.Request, res) => {
-    res.send(Server.renderToString(<HomePage user={req.user} />));
+    res.send(HTML_DOCTYPE + Server.renderToString(<HomePage user={req.user} />));
     res.end();
   });
 

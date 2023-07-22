@@ -23,6 +23,17 @@ export default () => (
         </label>
         <label>
           <span className="label-text">
+            Name
+          </span>
+          <input
+            type="text"
+            name="name"
+            required
+          />
+          <span className="error-message"></span>
+        </label>
+        <label>
+          <span className="label-text">
             Email
           </span>
           <input

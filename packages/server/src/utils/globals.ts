@@ -15,4 +15,4 @@ declare module 'react' {
   }
 }
 
-export {};
+export const HTML_DOCTYPE = '<!DOCTYPE html>';

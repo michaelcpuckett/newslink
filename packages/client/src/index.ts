@@ -1,3 +1,4 @@
+import './polyfills';
 import './Header';
 import './SidebarNav';
 import './LoginForm';

@@ -12,13 +12,13 @@
   border: 0;
   padding: 0;
   background: transparent;
-
-  &[open] {
-    display: grid;
-  }
 }
 
-:host  .container {
+:host dialog[open] {
+  display: grid;
+}
+
+:host .container {
   height: 100%;
   width: 300px;
   padding: 24px;

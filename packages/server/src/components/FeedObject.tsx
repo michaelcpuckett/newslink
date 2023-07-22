@@ -1,18 +1,26 @@
 import * as React from 'react';
 import '../utils/globals';
 import * as AP from  '@activity-kit/types';
+import { isType } from '@activity-kit/type-utilities';
 import CreateFeedObject from './CreateFeedObject';
+import FollowFeedObject from './FollowFeedObject';
 
 export default ({ object }: { object: AP.CoreObject }) => {
-  const [ primaryType ] = Array.isArray(object.type) ? object.type : [object.type];
+  let objectHtml: JSX.Element | null = null;
+
+  if (isType(object, AP.ActivityTypes.CREATE)) {
+    objectHtml = <CreateFeedObject activity={object} />;
+  }
+
+  if (isType(object, AP.ActivityTypes.FOLLOW)) {
+    objectHtml = <FollowFeedObject activity={object} />;
+  }
 
   return (
     <tl-feed-object role="article">
       <template shadowrootmode="open">
         <link rel="stylesheet" href="/styles/global.css" />
-        {primaryType === AP.ActivityTypes.CREATE ? (
-          <CreateFeedObject activity={object} />
-        ) : null}
+        {objectHtml}
       </template>
     </tl-feed-object>
   )

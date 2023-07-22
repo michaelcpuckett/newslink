@@ -23,11 +23,13 @@ export default ({ user }: { user: AP.Actor | null }) => (
                 Home
               </a>
             </li>
-            <li>
-              <a href={getId(user.url).href}>
-                Your Profile
-              </a>
-            </li>
+            {user ? (
+              <li>
+                <a href={getId(user.url).href}>
+                  Your Profile
+                </a>
+              </li>
+            ) : null}
             <li>
               <a href="/inbox">
                 Inbox

@@ -32,8 +32,10 @@
     define("utils/globals", ["require", "exports"], function (require, exports) {
         "use strict";
         Object.defineProperty(exports, "__esModule", { value: true });
+        exports.HTML_DOCTYPE = void 0;
+        exports.HTML_DOCTYPE = '<!DOCTYPE html>';
     });
-    define("endpoints/handleGetCollectionPage", ["require", "exports", "react", "react-dom/server", "@activity-kit/utilities", "@activity-kit/endpoints", "utils/globals"], function (require, exports, React, Server, utilities_1, endpoints_1) {
+    define("endpoints/handleGetCollectionPage", ["require", "exports", "react", "react-dom/server", "@activity-kit/utilities", "@activity-kit/endpoints", "utils/globals", "utils/globals"], function (require, exports, React, Server, utilities_1, endpoints_1, globals_1) {
         "use strict";
         Object.defineProperty(exports, "__esModule", { value: true });
         exports.default = (PageComponent) => (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -44,7 +46,7 @@
             });
             const render = (_b) => __awaiter(void 0, void 0, void 0, function* () {
                 var args = __rest(_b, []);
-                return Server.renderToString(React.createElement(PageComponent, Object.assign({}, args, { user: req.user })));
+                return globals_1.HTML_DOCTYPE + Server.renderToString(React.createElement(PageComponent, Object.assign({}, args, { user: req.user })));
             });
             const result = yield endpoint.respond(render).catch((err) => {
                 console.error(err);
@@ -85,8 +87,8 @@
                         React.createElement("ul", null,
                             React.createElement("li", null,
                                 React.createElement("a", { href: "/" }, "Home")),
-                            React.createElement("li", null,
-                                React.createElement("a", { href: (0, utilities_2.getId)(user.url).href }, "Your Profile")),
+                            user ? (React.createElement("li", null,
+                                React.createElement("a", { href: (0, utilities_2.getId)(user.url).href }, "Your Profile"))) : null,
                             React.createElement("li", null,
                                 React.createElement("a", { href: "/inbox" }, "Inbox"))))))));
     });
@@ -143,7 +145,7 @@
                     React.createElement("script", { src: "/scripts/index.js", type: "module" }))));
         };
     });
-    define("endpoints/handleGetUserPage", ["require", "exports", "react", "react-dom/server", "@activity-kit/utilities", "@activity-kit/endpoints", "pages/UserEntityPage", "utils/globals"], function (require, exports, React, Server, utilities_5, endpoints_2, UserEntityPage_1) {
+    define("endpoints/handleGetUserPage", ["require", "exports", "react", "react-dom/server", "@activity-kit/utilities", "@activity-kit/endpoints", "pages/UserEntityPage", "utils/globals", "utils/globals"], function (require, exports, React, Server, utilities_5, endpoints_2, UserEntityPage_1, globals_2) {
         "use strict";
         Object.defineProperty(exports, "__esModule", { value: true });
         exports.default = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -154,7 +156,7 @@
             });
             const render = (_b) => __awaiter(void 0, void 0, void 0, function* () {
                 var args = __rest(_b, []);
-                return Server.renderToString(React.createElement(UserEntityPage_1.default, Object.assign({}, args, { user: req.user })));
+                return globals_2.HTML_DOCTYPE + Server.renderToString(React.createElement(UserEntityPage_1.default, Object.assign({}, args, { user: req.user })));
             });
             const result = yield endpoint.respond(render).catch((err) => {
                 console.error(err);
@@ -203,6 +205,10 @@
                         React.createElement("select", { name: "type", required: true },
                             React.createElement("option", { value: "Person", selected: true }, "Person"),
                             React.createElement("option", { value: "Person" }, "Group")),
+                        React.createElement("span", { className: "error-message" })),
+                    React.createElement("label", null,
+                        React.createElement("span", { className: "label-text" }, "Name"),
+                        React.createElement("input", { type: "text", name: "name", required: true }),
                         React.createElement("span", { className: "error-message" })),
                     React.createElement("label", null,
                         React.createElement("span", { className: "label-text" }, "Email"),
@@ -329,7 +335,6 @@
         "use strict";
         Object.defineProperty(exports, "__esModule", { value: true });
         exports.default = ({ activity }) => {
-            (0, type_utilities_1.assertIsApActivity)(activity);
             const object = (0, utilities_8.getEntity)(activity.object);
             (0, type_utilities_1.assertIsApEntity)(object);
             const actor = (0, utilities_8.getEntity)(activity.actor);
@@ -356,15 +361,51 @@
                     objectHtml)));
         };
     });
-    define("components/FeedObject", ["require", "exports", "react", "@activity-kit/types", "components/CreateFeedObject", "utils/globals"], function (require, exports, React, AP, CreateFeedObject_1) {
+    define("components/FollowFeedObject", ["require", "exports", "react", "@activity-kit/types", "@activity-kit/type-utilities", "components/CreateNoteFeedObject", "components/CreatePersonFeedObject", "@activity-kit/utilities", "utils/globals"], function (require, exports, React, AP, type_utilities_2, CreateNoteFeedObject_2, CreatePersonFeedObject_2, utilities_9) {
+        "use strict";
+        Object.defineProperty(exports, "__esModule", { value: true });
+        exports.default = ({ activity }) => {
+            const object = (0, utilities_9.getEntity)(activity.object);
+            (0, type_utilities_2.assertIsApEntity)(object);
+            const actor = (0, utilities_9.getEntity)(activity.actor);
+            (0, type_utilities_2.assertIsApActor)(actor);
+            let objectHtml = (React.createElement("p", null, `The object type "${object.type}" is not supported.`));
+            if ((0, type_utilities_2.isType)(object, AP.ExtendedObjectTypes.NOTE)) {
+                objectHtml = React.createElement(CreateNoteFeedObject_2.default, { object: object });
+            }
+            if ((0, type_utilities_2.isType)(object, AP.ActorTypes.PERSON)) {
+                objectHtml = React.createElement(CreatePersonFeedObject_2.default, { object: object });
+            }
+            return (React.createElement("tl-create-feed-object", { role: "article" },
+                React.createElement("template", { shadowrootmode: "open" },
+                    React.createElement("link", { rel: "stylesheet", href: "/styles/global.css" }),
+                    React.createElement("link", { rel: "stylesheet", href: "/styles/components/FeedObject.css" }),
+                    React.createElement("link", { rel: "stylesheet", href: "/styles/components/CreateFeedObject.css" }),
+                    React.createElement("header", null,
+                        "New ",
+                        activity.type,
+                        " Activity by @",
+                        actor.preferredUsername,
+                        " on ",
+                        activity.published.toLocaleString()),
+                    objectHtml)));
+        };
+    });
+    define("components/FeedObject", ["require", "exports", "react", "@activity-kit/types", "@activity-kit/type-utilities", "components/CreateFeedObject", "components/FollowFeedObject", "utils/globals"], function (require, exports, React, AP, type_utilities_3, CreateFeedObject_1, FollowFeedObject_1) {
         "use strict";
         Object.defineProperty(exports, "__esModule", { value: true });
         exports.default = ({ object }) => {
-            const [primaryType] = Array.isArray(object.type) ? object.type : [object.type];
+            let objectHtml = null;
+            if ((0, type_utilities_3.isType)(object, AP.ActivityTypes.CREATE)) {
+                objectHtml = React.createElement(CreateFeedObject_1.default, { activity: object });
+            }
+            if ((0, type_utilities_3.isType)(object, AP.ActivityTypes.FOLLOW)) {
+                objectHtml = React.createElement(FollowFeedObject_1.default, { activity: object });
+            }
             return (React.createElement("tl-feed-object", { role: "article" },
                 React.createElement("template", { shadowrootmode: "open" },
                     React.createElement("link", { rel: "stylesheet", href: "/styles/global.css" }),
-                    primaryType === AP.ActivityTypes.CREATE ? (React.createElement(CreateFeedObject_1.default, { activity: object })) : null)));
+                    objectHtml)));
         };
     });
     define("components/Feed", ["require", "exports", "react", "components/FeedObject", "utils/globals"], function (require, exports, React, FeedObject_1) {
@@ -412,7 +453,7 @@
                     React.createElement("script", { src: "/scripts/index.js", type: "module" }))));
         };
     });
-    define("index", ["require", "exports", "react", "react-dom/server", "express", "body-parser", "fs", "cookie-parser", "mongodb", "@activity-kit/db-mongo", "@activity-kit/auth-token", "@activity-kit/crypto-node", "@activity-kit/storage-ftp", "@activity-kit/endpoints", "@activity-kit/core", "@activity-kit/utilities", "endpoints/handleGetCollectionPage", "endpoints/handleGetUserPage", "pages/HomePage", "pages/InboxEntityPage", "pages/InboxPageEntityPage", "pages/InboxEntityPage", "pages/InboxPageEntityPage", "utils/globals"], function (require, exports, React, Server, express, bodyParser, fs, cookies, mongodb_1, db_mongo_1, auth_token_1, crypto_node_1, storage_ftp_1, endpoints_3, core_1, utilities_9, handleGetCollectionPage_1, handleGetUserPage_1, HomePage_1, InboxEntityPage_1, InboxPageEntityPage_1, InboxEntityPage_2, InboxPageEntityPage_2) {
+    define("index", ["require", "exports", "react", "react-dom/server", "express", "body-parser", "fs", "cookie-parser", "mongodb", "@activity-kit/db-mongo", "@activity-kit/auth-token", "@activity-kit/crypto-node", "@activity-kit/storage-ftp", "@activity-kit/endpoints", "@activity-kit/core", "@activity-kit/utilities", "utils/globals", "endpoints/handleGetCollectionPage", "endpoints/handleGetUserPage", "pages/HomePage", "pages/InboxEntityPage", "pages/InboxPageEntityPage", "pages/InboxEntityPage", "pages/InboxPageEntityPage"], function (require, exports, React, Server, express, bodyParser, fs, cookies, mongodb_1, db_mongo_1, auth_token_1, crypto_node_1, storage_ftp_1, endpoints_3, core_1, utilities_10, globals_3, handleGetCollectionPage_1, handleGetUserPage_1, HomePage_1, InboxEntityPage_1, InboxPageEntityPage_1, InboxEntityPage_2, InboxPageEntityPage_2) {
         "use strict";
         Object.defineProperty(exports, "__esModule", { value: true });
         (() => __awaiter(void 0, void 0, void 0, function* () {
@@ -448,7 +489,7 @@
                 next();
             }));
             app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-                res.send(Server.renderToString(React.createElement(HomePage_1.default, { user: req.user })));
+                res.send(globals_3.HTML_DOCTYPE + Server.renderToString(React.createElement(HomePage_1.default, { user: req.user })));
                 res.end();
             }));
             app.get('/@:username/inbox', (0, handleGetCollectionPage_1.default)(InboxEntityPage_1.default));
@@ -464,9 +505,9 @@
                 }
                 const endpoint = new endpoints_3.OutboxPostEndpoint(core, {
                     body: req.body,
-                    url: new URL(req.url, utilities_9.LOCAL_DOMAIN),
+                    url: new URL(req.url, utilities_10.LOCAL_DOMAIN),
                     actor: req.user,
-                    routes: utilities_9.DEFAULT_ROUTES,
+                    routes: utilities_10.DEFAULT_ROUTES,
                 });
                 const result = yield endpoint.respond();
                 res.status(result.statusCode);
@@ -478,7 +519,7 @@
             app.post('/user', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 const endpoint = new endpoints_3.UserPostEndpoint(core, {
                     body: req.body,
-                    routes: utilities_9.DEFAULT_ROUTES,
+                    routes: utilities_10.DEFAULT_ROUTES,
                 });
                 const result = yield endpoint.respond();
                 res.status(result.statusCode);

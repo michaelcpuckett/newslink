@@ -236,6 +236,23 @@ Object.defineProperty(module.exports, "__esModule", {
 });
 
 
+function $e36d7c3069a1a98e$var$supportsDeclarativeShadowDOM() {
+    return HTMLTemplateElement.prototype.hasOwnProperty("shadowRoot");
+}
+function $e36d7c3069a1a98e$var$polyfillDeclarativeShadowDom(docOrShadowRoot) {
+    docOrShadowRoot.querySelectorAll("template[shadowrootmode]").forEach((template)=>{
+        const mode = template.getAttribute("shadowrootmode");
+        const shadowRoot = template.parentNode.attachShadow({
+            mode: mode
+        });
+        shadowRoot.appendChild(template.content);
+        template.remove();
+        $e36d7c3069a1a98e$var$polyfillDeclarativeShadowDom(shadowRoot);
+    });
+}
+if (!$e36d7c3069a1a98e$var$supportsDeclarativeShadowDOM()) $e36d7c3069a1a98e$var$polyfillDeclarativeShadowDom(document);
+
+
 class $3b781047587d482c$export$2e2bcd8739ae039 extends HTMLElement {
     constructor(){
         super();
@@ -410,6 +427,7 @@ class $1b224b5925e00ab9$export$2e2bcd8739ae039 extends (0, $1edf991ac1d79f91$exp
         this.boundSubmitHandler = this.handleSubmit.bind(this);
         this.typeElement = this.selectElements.find((selectElement)=>selectElement.matches('[name="type"]'));
         this.emailElement = this.inputElements.find((inputElement)=>inputElement.matches('[name="email"]'));
+        this.nameElement = this.inputElements.find((inputElement)=>inputElement.matches('[name="name"]'));
         this.usernameElement = this.inputElements.find((inputElement)=>inputElement.matches('[name="username"]'));
         this.passwordElement = this.inputElements.find((inputElement)=>inputElement.matches('[name="password"]'));
         this.repeatPasswordElement = this.inputElements.find((inputElement)=>inputElement.matches('[name="repeat-password"]'));

@@ -5,6 +5,7 @@ import * as AP from  '@activity-kit/types';
 import { LOCAL_DOMAIN } from '@activity-kit/utilities';
 import { EntityGetEndpoint } from '@activity-kit/endpoints';
 import '../utils/globals';
+import { HTML_DOCTYPE } from '../utils/globals';
 
 export default (
   PageComponent: React.ComponentType<{ entity: AP.OrderedCollection; user: AP.Actor | null }>,
@@ -15,7 +16,7 @@ export default (
   });
 
   const render = async ({ ...args }: { entity: AP.OrderedCollection }) => {
-    return Server.renderToString(<PageComponent {...args} user={req.user} />);
+    return HTML_DOCTYPE + Server.renderToString(<PageComponent {...args} user={req.user} />);
   };
 
   const result = await endpoint.respond(render).catch((err: Error) => {

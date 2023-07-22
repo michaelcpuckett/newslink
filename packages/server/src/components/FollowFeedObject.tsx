@@ -6,7 +6,7 @@ import CreateNoteFeedObject from './CreateNoteFeedObject';
 import CreatePersonFeedObject from './CreatePersonFeedObject';
 import {getEntity} from '@activity-kit/utilities';
 
-export default ({ activity }: { activity: AP.Create }) => {
+export default ({ activity }: { activity: AP.Follow }) => {
   const object = getEntity(activity.object);
 
   assertIsApEntity(object);

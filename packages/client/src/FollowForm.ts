@@ -1,7 +1,7 @@
 import * as AP from '@activity-kit/types';
 import GenericForm from './GenericForm';
 
-export default class CreatePostForm extends GenericForm {
+export default class FollowForm extends GenericForm {
   private hiddenFollowerElement: HTMLInputElement;
   private hiddenFolloweeElement: HTMLInputElement;
   private hiddenFollowersElement: HTMLInputElement;
@@ -85,4 +85,4 @@ export default class CreatePostForm extends GenericForm {
   }
 }
 
-customElements.define('tl-create-post-form', CreatePostForm);
+customElements.define('tl-follow-form', FollowForm);

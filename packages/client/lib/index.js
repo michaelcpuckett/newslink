@@ -1,3 +1,241 @@
+var $parcel$global =
+typeof globalThis !== 'undefined'
+  ? globalThis
+  : typeof self !== 'undefined'
+  ? self
+  : typeof window !== 'undefined'
+  ? window
+  : typeof global !== 'undefined'
+  ? global
+  : {};
+var $parcel$modules = {};
+var $parcel$inits = {};
+
+var parcelRequire = $parcel$global["parcelRequire6577"];
+if (parcelRequire == null) {
+  parcelRequire = function(id) {
+    if (id in $parcel$modules) {
+      return $parcel$modules[id].exports;
+    }
+    if (id in $parcel$inits) {
+      var init = $parcel$inits[id];
+      delete $parcel$inits[id];
+      var module = {id: id, exports: {}};
+      $parcel$modules[id] = module;
+      init.call(module.exports, module, module.exports);
+      return module.exports;
+    }
+    var err = new Error("Cannot find module '" + id + "'");
+    err.code = 'MODULE_NOT_FOUND';
+    throw err;
+  };
+
+  parcelRequire.register = function register(id, init) {
+    $parcel$inits[id] = init;
+  };
+
+  $parcel$global["parcelRequire6577"] = parcelRequire;
+}
+parcelRequire.register("cA0Xq", function(module, exports) {
+"use strict";
+Object.defineProperty(module.exports, "__esModule", {
+    value: true
+});
+
+});
+
+parcelRequire.register("86BJo", function(module, exports) {
+"use strict";
+var $5e6c26dcd2cfff4b$var$__createBinding = module.exports && module.exports.__createBinding || (Object.create ? function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) desc = {
+        enumerable: true,
+        get: function() {
+            return m[k];
+        }
+    };
+    Object.defineProperty(o, k2, desc);
+} : function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+});
+var $5e6c26dcd2cfff4b$var$__exportStar = module.exports && module.exports.__exportStar || function(m, exports1) {
+    for(var p in m)if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports1, p)) $5e6c26dcd2cfff4b$var$__createBinding(exports1, m, p);
+};
+Object.defineProperty(module.exports, "__esModule", {
+    value: true
+});
+
+$5e6c26dcd2cfff4b$var$__exportStar((parcelRequire("6OsPt")), module.exports);
+
+$5e6c26dcd2cfff4b$var$__exportStar((parcelRequire("6Cz9I")), module.exports);
+
+$5e6c26dcd2cfff4b$var$__exportStar((parcelRequire("jCiZR")), module.exports);
+
+$5e6c26dcd2cfff4b$var$__exportStar((parcelRequire("bvy9e")), module.exports);
+
+});
+parcelRequire.register("6OsPt", function(module, exports) {
+"use strict";
+Object.defineProperty(module.exports, "__esModule", {
+    value: true
+});
+
+});
+
+parcelRequire.register("6Cz9I", function(module, exports) {
+"use strict";
+Object.defineProperty(module.exports, "__esModule", {
+    value: true
+});
+
+});
+
+parcelRequire.register("jCiZR", function(module, exports) {
+"use strict";
+Object.defineProperty(module.exports, "__esModule", {
+    value: true
+});
+
+});
+
+parcelRequire.register("bvy9e", function(module, exports) {
+"use strict";
+Object.defineProperty(module.exports, "__esModule", {
+    value: true
+});
+
+});
+
+
+parcelRequire.register("lElDO", function(module, exports) {
+"use strict";
+var $fc2e1ee709b2be50$var$__createBinding = module.exports && module.exports.__createBinding || (Object.create ? function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) desc = {
+        enumerable: true,
+        get: function() {
+            return m[k];
+        }
+    };
+    Object.defineProperty(o, k2, desc);
+} : function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+});
+var $fc2e1ee709b2be50$var$__exportStar = module.exports && module.exports.__exportStar || function(m, exports1) {
+    for(var p in m)if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports1, p)) $fc2e1ee709b2be50$var$__createBinding(exports1, m, p);
+};
+Object.defineProperty(module.exports, "__esModule", {
+    value: true
+});
+
+$fc2e1ee709b2be50$var$__exportStar((parcelRequire("4qth3")), module.exports);
+
+$fc2e1ee709b2be50$var$__exportStar((parcelRequire("2vRsK")), module.exports);
+
+});
+parcelRequire.register("4qth3", function(module, exports) {
+"use strict";
+Object.defineProperty(module.exports, "__esModule", {
+    value: true
+});
+module.exports.AllTypes = module.exports.CoreObjectTypes = module.exports.CollectionPageTypes = module.exports.CollectionTypes = module.exports.ActivityTypes = module.exports.IntransitiveActivityTypes = module.exports.TransitiveActivityTypes = module.exports.ActorTypes = module.exports.LinkTypes = module.exports.ExtendedObjectTypes = void 0;
+module.exports.ExtendedObjectTypes = {
+    ARTICLE: "Article",
+    AUDIO: "Audio",
+    DOCUMENT: "Document",
+    EVENT: "Event",
+    IMAGE: "Image",
+    NOTE: "Note",
+    PAGE: "Page",
+    PLACE: "Place",
+    PROFILE: "Profile",
+    RELATIONSHIP: "Relationship",
+    TOMBSTONE: "Tombstone",
+    VIDEO: "Video",
+    HASHTAG: "Hashtag"
+};
+module.exports.LinkTypes = {
+    LINK: "Link",
+    MENTION: "Mention"
+};
+module.exports.ActorTypes = {
+    APPLICATION: "Application",
+    GROUP: "Group",
+    ORGANIZATION: "Organization",
+    PERSON: "Person",
+    SERVICE: "Service"
+};
+module.exports.TransitiveActivityTypes = {
+    ACCEPT: "Accept",
+    ADD: "Add",
+    ANNOUNCE: "Announce",
+    BLOCK: "Block",
+    IGNORE: "Ignore",
+    CREATE: "Create",
+    DELETE: "Delete",
+    DISLIKE: "Dislike",
+    FLAG: "Flag",
+    FOLLOW: "Follow",
+    INVITE: "Invite",
+    JOIN: "Join",
+    LEAVE: "Leave",
+    LIKE: "Like",
+    LISTEN: "Listen",
+    MOVE: "Move",
+    OFFER: "Offer",
+    READ: "Read",
+    REJECT: "Reject",
+    REMOVE: "Remove",
+    TENTATIVE_ACCEPT: "TentativeAccept",
+    TENTATIVE_REJECT: "TentativeReject",
+    UNDO: "Undo",
+    UPDATE: "Update",
+    VIEW: "View"
+};
+module.exports.IntransitiveActivityTypes = {
+    ARRIVE: "Arrive",
+    TRAVEL: "Travel",
+    QUESTION: "Question"
+};
+module.exports.ActivityTypes = {
+    ...module.exports.TransitiveActivityTypes,
+    ...module.exports.IntransitiveActivityTypes
+};
+module.exports.CollectionTypes = {
+    COLLECTION: "Collection",
+    ORDERED_COLLECTION: "OrderedCollection"
+};
+module.exports.CollectionPageTypes = {
+    COLLECTION_PAGE: "CollectionPage",
+    ORDERED_COLLECTION_PAGE: "OrderedCollectionPage"
+};
+module.exports.CoreObjectTypes = {
+    ...module.exports.ExtendedObjectTypes,
+    ...module.exports.ActorTypes,
+    ...module.exports.ActivityTypes,
+    ...module.exports.CollectionTypes,
+    ...module.exports.CollectionPageTypes
+};
+module.exports.AllTypes = {
+    ...module.exports.CoreObjectTypes,
+    ...module.exports.LinkTypes
+};
+
+});
+
+parcelRequire.register("2vRsK", function(module, exports) {
+"use strict";
+Object.defineProperty(module.exports, "__esModule", {
+    value: true
+});
+
+});
+
+
 class $3b781047587d482c$export$2e2bcd8739ae039 extends HTMLElement {
     constructor(){
         super();
@@ -219,6 +457,89 @@ class $1b224b5925e00ab9$export$2e2bcd8739ae039 extends (0, $1edf991ac1d79f91$exp
     }
 }
 customElements.define("tl-sign-up-form", $1b224b5925e00ab9$export$2e2bcd8739ae039);
+
+
+var $92a63d94b4cd6d36$exports = {};
+"use strict";
+var $92a63d94b4cd6d36$var$__createBinding = $92a63d94b4cd6d36$exports && $92a63d94b4cd6d36$exports.__createBinding || (Object.create ? function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) desc = {
+        enumerable: true,
+        get: function() {
+            return m[k];
+        }
+    };
+    Object.defineProperty(o, k2, desc);
+} : function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+});
+var $92a63d94b4cd6d36$var$__exportStar = $92a63d94b4cd6d36$exports && $92a63d94b4cd6d36$exports.__exportStar || function(m, exports1) {
+    for(var p in m)if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports1, p)) $92a63d94b4cd6d36$var$__createBinding(exports1, m, p);
+};
+Object.defineProperty($92a63d94b4cd6d36$exports, "__esModule", {
+    value: true
+});
+
+$92a63d94b4cd6d36$var$__exportStar((parcelRequire("cA0Xq")), $92a63d94b4cd6d36$exports);
+
+$92a63d94b4cd6d36$var$__exportStar((parcelRequire("86BJo")), $92a63d94b4cd6d36$exports);
+
+$92a63d94b4cd6d36$var$__exportStar((parcelRequire("lElDO")), $92a63d94b4cd6d36$exports);
+
+
+
+class $041844c894de54c4$export$2e2bcd8739ae039 extends (0, $1edf991ac1d79f91$export$2e2bcd8739ae039) {
+    constructor(){
+        super();
+        this.boundSubmitHandler = this.handleSubmit.bind(this);
+        if (!this.formActionUrl) throw new Error("Could not find form action.");
+        const hiddenFollowerElement = this.inputElements.find((inputElement)=>inputElement.matches('[name="follower"]'));
+        const hiddenFolloweeElement = this.inputElements.find((inputElement)=>inputElement.matches('[name="followee"]'));
+        const hiddenFollowersElement = this.inputElements.find((inputElement)=>inputElement.matches('[name="followers"]'));
+        if (!hiddenFolloweeElement || !hiddenFollowerElement || !hiddenFollowersElement) throw new Error("Could not find required elements.");
+        this.hiddenFolloweeElement = hiddenFolloweeElement;
+        this.hiddenFollowerElement = hiddenFollowerElement;
+        this.hiddenFollowersElement = hiddenFollowersElement;
+        this.initializeEventListeners();
+    }
+    initializeEventListeners() {
+        super.initializeEventListeners();
+        this.formElement.addEventListener("submit", this.boundSubmitHandler);
+    }
+    handleSubmit(event) {
+        event.preventDefault();
+        if (!this.formElement.checkValidity()) return;
+        const { value: follower } = this.hiddenFollowerElement;
+        const { value: followee } = this.hiddenFolloweeElement;
+        const { value: followers } = this.hiddenFollowersElement;
+        window.fetch(this.formActionUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/activity+json"
+            },
+            body: JSON.stringify({
+                "@context": "https://www.w3.org/ns/activitystreams",
+                type: $92a63d94b4cd6d36$exports.ActivityTypes.FOLLOW,
+                actor: follower,
+                object: followee,
+                to: [
+                    followee
+                ],
+                cc: [
+                    followers
+                ]
+            })
+        }).then((response)=>response.json()).then((result)=>{
+            console.log("Success:", result);
+        }).catch((error)=>{
+            console.error(error);
+        // this.usernameElement.setCustomValidity('Password incorrect.');
+        });
+    }
+}
+customElements.define("tl-follow-form", $041844c894de54c4$export$2e2bcd8739ae039);
 
 
 

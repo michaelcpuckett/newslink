@@ -24,9 +24,6 @@
       "includeNodeModules": true
     }
   },
-  "dependencies": {
-    "@timeline/components": "0.0.0"
-  },
   "devDependencies": {
     "nodemon": "^3.0.1",
     "parcel": "^2.9.3"

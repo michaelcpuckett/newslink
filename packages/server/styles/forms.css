@@ -1,15 +1,15 @@
-form {
+:host form {
   display: grid;
   gap: 24px;
 }
 
-label {
+:host label {
   display: grid;
   gap: 6px;
 }
 
-input,
-textarea {
+:host input,
+:host textarea {
   border: 1px solid #ccc;
   border-radius: 4px;
   padding: 12px;
@@ -23,17 +23,17 @@ textarea {
   }
 }
 
-textarea {
+:host textarea {
   min-height: 120px;
 }
 
-.label-text {
+:host .label-text {
   .is-invalid > & {
     color: red;
   }
 }
 
-.error-message {
+:host .error-message {
   display: none;
   color: red;
 

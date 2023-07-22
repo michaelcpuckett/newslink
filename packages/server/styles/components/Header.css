@@ -1,0 +1,7 @@
+:host header {
+  display: grid;
+  gap: 24px;
+  align-items: center;
+  padding: 24px;
+  grid-template-columns: minmax(max-content, 1fr) min(100% - 148px, 1000px) minmax(0, 1fr);
+}

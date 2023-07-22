@@ -1,5 +1,5 @@
-*,
-*:before,
-*:after {
+:host *,
+:host *:before,
+:host *:after {
   box-sizing: border-box;
 }

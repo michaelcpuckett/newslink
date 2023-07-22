@@ -11,6 +11,29 @@ export default () => (
       <form noValidate>
         <label>
           <span className="label-text">
+            Type
+          </span>
+          <select
+            name="type"
+            required>
+            <option value="Person" selected>Person</option>
+            <option value="Person">Group</option>
+          </select>
+          <span className="error-message"></span>
+        </label>
+        <label>
+          <span className="label-text">
+            Email
+          </span>
+          <input
+            type="text"
+            name="email"
+            required
+          />
+          <span className="error-message"></span>
+        </label>
+        <label>
+          <span className="label-text">
             Username
           </span>
           <input

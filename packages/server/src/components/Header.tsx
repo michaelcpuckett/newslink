@@ -1,7 +1,8 @@
 import * as React from 'react';
+import * as AP from  '@activity-kit/types';
 import '../utils/globals';
 
-export default () => (
+export default ({ user }: { user: AP.Actor | null }) => (
   <tl-header>
     <template shadowrootmode="open">
       <link rel="stylesheet" href="/styles/global.css" />

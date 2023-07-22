@@ -1,9 +1,10 @@
 import * as React from 'react';
+import * as AP from  '@activity-kit/types';
 import EditProfileForm from '../components/EditProfileForm';
 import Header from '../components/Header';
 import SidebarNav from '../components/SidebarNav';
 
-export default () => (
+export default ({ user }: { user: AP.Actor | null }) => (
   <html lang="en">
     <head>
       <meta charSet="utf-8" />
@@ -11,8 +12,8 @@ export default () => (
       <link href="/styles/light-dom.css" rel="stylesheet" />
     </head>
     <body>
-      <Header />
-      <SidebarNav />
+      <Header user={user} />
+      <SidebarNav user={user} />
       <main>
         <h1>
           Edit Profile

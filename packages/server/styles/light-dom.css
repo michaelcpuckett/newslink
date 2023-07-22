@@ -8,3 +8,8 @@ body {
   margin: 0;
   font-family: -apple-system, 'Helvetica Neue', Helvetica, sans-serif;
 }
+
+main {
+  max-width: min(100% - 48px, 1000px);
+  margin: 0 auto;
+}

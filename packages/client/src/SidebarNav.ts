@@ -6,6 +6,9 @@ export default class SidebarNav extends HTMLElement {
   private boundDialogClosedHandler = this.handleDialogClosed.bind(this);
   private boundToggleMenuHandler = this.handleToggleMenu.bind(this);
   private boundCloseButtonClickHandler = this.handleCloseButtonClick.bind(this);
+  private boundMediaQueryChangeHandler = this.handleMediaQueryChange.bind(this);
+
+  private mediaQuery = window.matchMedia('(min-width: 1648px)');
 
   static get observedAttributes() {
     return ['is-open'];
@@ -35,6 +38,7 @@ export default class SidebarNav extends HTMLElement {
     }
 
     this.initializeEventListeners();
+    this.handleMediaQueryChange();
   }
 
   private initializeEventListeners() {
@@ -50,6 +54,11 @@ export default class SidebarNav extends HTMLElement {
 
     this.dialogElement.addEventListener('click', this.boundDialogClickHandler);
     this.dialogElement.addEventListener('close', this.boundDialogClosedHandler);
+
+    this.mediaQuery.addEventListener(
+      'change',
+      this.boundMediaQueryChangeHandler,
+    );
   }
 
   private handleToggleMenu() {
@@ -75,11 +84,29 @@ export default class SidebarNav extends HTMLElement {
   }
 
   private open() {
-    this.dialogElement.showModal();
+    if (this.dialogElement.open) {
+      this.dialogElement.close();
+    }
+
+    if (this.mediaQuery.matches) {
+      this.dialogElement.show();
+    } else {
+      this.dialogElement.showModal();
+    }
   }
 
   private close() {
-    this.dialogElement.close();
+    if (!this.mediaQuery.matches) {
+      this.dialogElement.close();
+    }
+  }
+
+  private handleMediaQueryChange() {
+    if (this.mediaQuery.matches) {
+      this.open();
+    } else {
+      this.close();
+    }
   }
 }
 

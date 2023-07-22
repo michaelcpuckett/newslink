@@ -1,7 +1,9 @@
 import * as React from 'react';
+import * as AP from  '@activity-kit/types';
+import { getId } from '@activity-kit/utilities';
 import '../utils/globals';
 
-export default () => (
+export default ({ user }: { user: AP.Actor | null }) => (
   <tl-sidebar-nav>
     <template shadowrootmode="open">
       <link rel="stylesheet" href="/styles/global.css" />
@@ -17,8 +19,18 @@ export default () => (
           </button>
           <ul>
             <li>
-              <a href="#">
+              <a href="/">
                 Home
+              </a>
+            </li>
+            <li>
+              <a href={getId(user.url).href}>
+                Your Profile
+              </a>
+            </li>
+            <li>
+              <a href="/inbox">
+                Inbox
               </a>
             </li>
           </ul>

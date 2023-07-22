@@ -2,6 +2,8 @@ export default class GenericForm extends HTMLElement {
   protected formElement: HTMLFormElement;
   protected inputElements: HTMLInputElement[];
   protected textareaElements: HTMLTextAreaElement[];
+  protected selectElements: HTMLSelectElement[];
+  protected formActionUrl: URL | null = null;
 
   protected boundInvalidHandler: (event: Event) => void =
     this.handleInvalid.bind(this);
@@ -24,12 +26,20 @@ export default class GenericForm extends HTMLElement {
       throw new Error('Could not find required elements.');
     }
 
+    this.formActionUrl = this.formElement.action
+      ? new URL(this.formElement.action)
+      : null;
+
     this.inputElements = Array.from(
-      this.shadowRoot.querySelectorAll<HTMLInputElement>('input'),
+      this.formElement.querySelectorAll<HTMLInputElement>('input'),
     );
 
     this.textareaElements = Array.from(
-      this.shadowRoot.querySelectorAll<HTMLTextAreaElement>('textarea'),
+      this.formElement.querySelectorAll<HTMLTextAreaElement>('textarea'),
+    );
+
+    this.selectElements = Array.from(
+      this.formElement.querySelectorAll<HTMLSelectElement>('select'),
     );
 
     this.initializeEventListeners();

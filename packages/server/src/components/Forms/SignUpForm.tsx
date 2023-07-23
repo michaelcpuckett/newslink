@@ -1,5 +1,5 @@
 import * as React from 'react';
-import '../utils/globals';
+import '../../utils/globals';
 
 export default () => (
   <tl-sign-up-form>

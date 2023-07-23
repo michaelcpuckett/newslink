@@ -88,7 +88,7 @@
             res.end();
         });
     });
-    define("components/Header", ["require", "exports", "react", "utils/globals"], function (require, exports, React) {
+    define("components/Chrome/Header", ["require", "exports", "react", "utils/globals"], function (require, exports, React) {
         "use strict";
         Object.defineProperty(exports, "__esModule", { value: true });
         exports.default = ({ user }) => (React.createElement("tl-header", null,
@@ -100,7 +100,7 @@
                     React.createElement("button", { className: "menu-toggle-button", type: "button" }, "Menu"),
                     React.createElement("span", null, "Welcome 2 Activityland")))));
     });
-    define("components/SidebarNav", ["require", "exports", "react", "@activity-kit/utilities", "utils/globals"], function (require, exports, React, utilities_2) {
+    define("components/Chrome/SidebarNav", ["require", "exports", "react", "@activity-kit/utilities", "utils/globals"], function (require, exports, React, utilities_2) {
         "use strict";
         Object.defineProperty(exports, "__esModule", { value: true });
         exports.default = ({ user }) => (React.createElement("tl-sidebar-nav", null,
@@ -120,7 +120,15 @@
                             React.createElement("li", null,
                                 React.createElement("a", { href: "/inbox" }, "Inbox"))))))));
     });
-    define("components/PageChrome", ["require", "exports", "react", "components/Header", "components/SidebarNav"], function (require, exports, React, Header_1, SidebarNav_1) {
+    define("components/Chrome/Footer", ["require", "exports", "react", "utils/globals"], function (require, exports, React) {
+        "use strict";
+        Object.defineProperty(exports, "__esModule", { value: true });
+        exports.default = ({ user }) => (React.createElement("tl-footer", null,
+            React.createElement("template", { shadowrootmode: "open" },
+                React.createElement("link", { rel: "stylesheet", href: "/styles/global.css" }),
+                React.createElement("link", { rel: "stylesheet", href: "/styles/components/Footer.css" }))));
+    });
+    define("components/Chrome/PageChrome", ["require", "exports", "react", "components/Chrome/Header", "components/Chrome/SidebarNav", "components/Chrome/Footer"], function (require, exports, React, Header_1, SidebarNav_1, Footer_1) {
         "use strict";
         Object.defineProperty(exports, "__esModule", { value: true });
         exports.default = ({ title, user, children }) => (React.createElement("html", { lang: "en" },
@@ -132,9 +140,10 @@
                 React.createElement(Header_1.default, { user: user }),
                 React.createElement(SidebarNav_1.default, { user: user }),
                 React.createElement("main", null, children),
+                React.createElement(Footer_1.default, { user: user }),
                 React.createElement("script", { src: "/scripts/index.js", type: "module" }))));
     });
-    define("components/FollowForm", ["require", "exports", "react", "@activity-kit/utilities", "utils/globals"], function (require, exports, React, utilities_3) {
+    define("components/Forms/FollowForm", ["require", "exports", "react", "@activity-kit/utilities", "utils/globals"], function (require, exports, React, utilities_3) {
         "use strict";
         Object.defineProperty(exports, "__esModule", { value: true });
         exports.default = ({ follower, followee }) => (React.createElement("tl-follow-form", null,
@@ -149,14 +158,146 @@
                     React.createElement("input", { type: "hidden", name: "followers", value: (0, utilities_3.getId)(follower.followers).href }),
                     React.createElement("button", { type: "submit" }, "Follow")))));
     });
-    define("pages/UserEntityPage", ["require", "exports", "react", "@activity-kit/utilities", "components/PageChrome", "components/FollowForm"], function (require, exports, React, utilities_4, PageChrome_1, FollowForm_1) {
+    define("components/Feed/Note", ["require", "exports", "react", "utils/globals"], function (require, exports, React) {
+        "use strict";
+        Object.defineProperty(exports, "__esModule", { value: true });
+        exports.default = ({ object }) => {
+            return (React.createElement("tl-create-note", { role: "article" },
+                React.createElement("template", { shadowrootmode: "open" },
+                    React.createElement("link", { rel: "stylesheet", href: "/styles/global.css" }),
+                    React.createElement("link", { rel: "stylesheet", href: "/styles/components/FeedObject.css" }),
+                    React.createElement("link", { rel: "stylesheet", href: "/styles/components/CreateNoteFeedObject.css" }),
+                    React.createElement("header", null, object.summary),
+                    React.createElement("dl", null,
+                        React.createElement("dt", null, "Published"),
+                        React.createElement("dd", null,
+                            React.createElement("time", { dateTime: object.published.toISOString() }, object.published.toLocaleString()))),
+                    React.createElement("p", null, object.content))));
+        };
+    });
+    define("components/Feed/Person", ["require", "exports", "react", "utils/globals"], function (require, exports, React) {
+        "use strict";
+        Object.defineProperty(exports, "__esModule", { value: true });
+        exports.default = ({ object }) => {
+            return (React.createElement("tl-create-person-feed-object", { role: "article" },
+                React.createElement("template", { shadowrootmode: "open" },
+                    React.createElement("link", { rel: "stylesheet", href: "/styles/global.css" }),
+                    React.createElement("link", { rel: "stylesheet", href: "/styles/components/FeedObject.css" }),
+                    React.createElement("link", { rel: "stylesheet", href: "/styles/components/CreatePersonFeedObject.css" }),
+                    React.createElement("header", null,
+                        "@",
+                        object.preferredUsername),
+                    React.createElement("dl", null,
+                        React.createElement("dt", null, "Name"),
+                        React.createElement("dd", null, object.name),
+                        React.createElement("dt", null, "Created"),
+                        React.createElement("dd", null,
+                            React.createElement("time", { dateTime: object.published.toISOString() }, object.published.toLocaleString()))),
+                    React.createElement("p", null, object.summary))));
+        };
+    });
+    define("components/Feed/CreateActivity", ["require", "exports", "react", "@activity-kit/types", "@activity-kit/type-utilities", "components/Feed/Note", "components/Feed/Person", "@activity-kit/utilities", "utils/globals"], function (require, exports, React, AP, type_utilities_1, Note_1, Person_1, utilities_4) {
+        "use strict";
+        Object.defineProperty(exports, "__esModule", { value: true });
+        exports.default = ({ activity }) => {
+            const object = (0, utilities_4.getEntity)(activity.object);
+            type_utilities_1.assert.isApEntity(object);
+            const actor = (0, utilities_4.getEntity)(activity.actor);
+            type_utilities_1.assert.isApActor(actor);
+            let objectHtml = (React.createElement("p", null, `The object type "${object.type}" is not supported.`));
+            if (type_utilities_1.guard.isType(object, AP.ExtendedObjectTypes.NOTE)) {
+                objectHtml = React.createElement(Note_1.default, { object: object });
+            }
+            if (type_utilities_1.guard.isType(object, AP.ActorTypes.PERSON)) {
+                objectHtml = React.createElement(Person_1.default, { object: object });
+            }
+            return (React.createElement("tl-create-activity", { role: "article" },
+                React.createElement("template", { shadowrootmode: "open" },
+                    React.createElement("link", { rel: "stylesheet", href: "/styles/global.css" }),
+                    React.createElement("link", { rel: "stylesheet", href: "/styles/components/FeedObject.css" }),
+                    React.createElement("link", { rel: "stylesheet", href: "/styles/components/CreateFeedObject.css" }),
+                    React.createElement("header", null,
+                        "New ",
+                        activity.type,
+                        " Activity by @",
+                        actor.preferredUsername,
+                        " on ",
+                        activity.published.toLocaleString()),
+                    objectHtml)));
+        };
+    });
+    define("components/Feed/FollowActivity", ["require", "exports", "react", "@activity-kit/type-utilities", "@activity-kit/utilities", "utils/globals"], function (require, exports, React, type_utilities_2, utilities_5) {
+        "use strict";
+        Object.defineProperty(exports, "__esModule", { value: true });
+        exports.default = ({ activity }) => {
+            const object = (0, utilities_5.getEntity)(activity.object);
+            type_utilities_2.assert.isApActor(object);
+            const actor = (0, utilities_5.getEntity)(activity.actor);
+            type_utilities_2.assert.isApActor(actor);
+            return (React.createElement("tl-create-feed-object", { role: "article" },
+                React.createElement("template", { shadowrootmode: "open" },
+                    React.createElement("link", { rel: "stylesheet", href: "/styles/global.css" }),
+                    React.createElement("link", { rel: "stylesheet", href: "/styles/components/FeedObject.css" }),
+                    React.createElement("link", { rel: "stylesheet", href: "/styles/components/CreateFeedObject.css" }),
+                    React.createElement("header", null,
+                        "New ",
+                        activity.type,
+                        " Activity by @",
+                        actor.preferredUsername,
+                        " on",
+                        React.createElement("a", { href: (0, utilities_5.getId)(activity).href }, activity.published.toLocaleString())),
+                    "To:",
+                    React.createElement("a", { href: (0, utilities_5.getId)(object).href },
+                        "@",
+                        object.preferredUsername))));
+        };
+    });
+    define("components/Feed/Activity", ["require", "exports", "react", "@activity-kit/types", "@activity-kit/type-utilities", "components/Feed/CreateActivity", "components/Feed/FollowActivity", "utils/globals"], function (require, exports, React, AP, type_utilities_3, CreateActivity_1, FollowActivity_1) {
+        "use strict";
+        Object.defineProperty(exports, "__esModule", { value: true });
+        /*const isLinkType = (item: AP.Entity): item is AP.Link => {
+          const types = getArray(item.type);
+        
+          return types.includes('Link') || types.includes('Mention');
+        };
+        
+        if (isLinkType(object)) {
+          throw new Error(`Received a Link instead of an Object.`);
+        }*/
+        exports.default = ({ object }) => {
+            let objectHtml = null;
+            if (type_utilities_3.guard.isType(object, AP.ActivityTypes.CREATE)) {
+                objectHtml = React.createElement(CreateActivity_1.default, { activity: object });
+            }
+            if (type_utilities_3.guard.isType(object, AP.ActivityTypes.FOLLOW)) {
+                objectHtml = React.createElement(FollowActivity_1.default, { activity: object });
+            }
+            return (React.createElement("tl-activity", null,
+                React.createElement("template", { shadowrootmode: "open" },
+                    React.createElement("link", { rel: "stylesheet", href: "/styles/global.css" }),
+                    objectHtml)));
+        };
+    });
+    define("pages/UserEntityPage", ["require", "exports", "react", "@activity-kit/utilities", "components/Chrome/PageChrome", "components/Forms/FollowForm", "components/Feed/Activity", "../components/Feed/Entity"], function (require, exports, React, utilities_6, PageChrome_1, FollowForm_1, Activity_1, Entity_1) {
         "use strict";
         Object.defineProperty(exports, "__esModule", { value: true });
         exports.default = ({ entity, user }) => {
-            var _a, _b, _c;
-            const followers = (0, utilities_4.getArray)((_a = (0, utilities_4.getEntity)(entity.followers)) === null || _a === void 0 ? void 0 : _a.items);
-            const following = (0, utilities_4.getArray)((_b = (0, utilities_4.getEntity)(entity.following)) === null || _b === void 0 ? void 0 : _b.items);
-            const requests = (0, utilities_4.getArray)((_c = (0, utilities_4.getEntity)(entity.streams.find(stream => { var _a; return ((_a = (0, utilities_4.getEntity)(stream)) === null || _a === void 0 ? void 0 : _a.name) === 'Requests'; }))) === null || _c === void 0 ? void 0 : _c.items);
+            const getItems = (collection) => {
+                if (!collection) {
+                    return [];
+                }
+                return [...(0, utilities_6.getArray)(collection.items), ...(0, utilities_6.getArray)(collection.orderedItems)];
+            };
+            const posts = getItems((0, utilities_6.getEntity)(entity.outbox));
+            const followers = getItems((0, utilities_6.getEntity)(entity.followers));
+            const following = getItems((0, utilities_6.getEntity)(entity.following));
+            const streams = entity.streams.map((stream) => {
+                const entity = (0, utilities_6.getEntity)(stream);
+                if (!entity) {
+                    return null;
+                }
+                return Object.assign(Object.assign({}, entity), { items: (0, utilities_6.getArray)(entity.items), orderedItems: (0, utilities_6.getArray)(entity.orderedItems) });
+            });
             return (React.createElement(PageChrome_1.default, { title: entity.name || 'User', user: user },
                 React.createElement("h1", null,
                     "@",
@@ -168,36 +309,47 @@
                     React.createElement("dd", null,
                         React.createElement("ul", null,
                             React.createElement("li", null,
-                                React.createElement("a", { href: (0, utilities_4.getId)(entity.inbox).href }, "Inbox")),
+                                React.createElement("a", { href: (0, utilities_6.getId)(entity.inbox).href }, "Inbox")),
                             React.createElement("li", null,
-                                React.createElement("a", { href: (0, utilities_4.getId)(entity.outbox).href }, "Outbox"))))),
+                                React.createElement("a", { href: (0, utilities_6.getId)(entity.outbox).href }, "Outbox"))))),
                 React.createElement("h2", null, "Follow"),
                 React.createElement(FollowForm_1.default, { follower: user, followee: entity }),
                 React.createElement("h2", null, "Followers"),
-                React.createElement("ul", null, followers.map(follower => {
-                    return (React.createElement("li", null,
-                        React.createElement("a", { href: (0, utilities_4.getId)(follower).href || '#' }, (0, utilities_4.getId)(follower).href)));
+                React.createElement("ul", null, followers.map((follower) => {
+                    return (React.createElement("li", { key: (0, utilities_6.getId)(follower).href },
+                        React.createElement("a", { href: (0, utilities_6.getId)(follower).href }, (0, utilities_6.getId)(follower).href)));
                 })),
                 React.createElement("h2", null, "Following"),
-                React.createElement("ul", null, following.map(followee => {
-                    return (React.createElement("li", null,
-                        React.createElement("a", { href: (0, utilities_4.getId)(followee).href || '#' }, (0, utilities_4.getId)(followee).href)));
+                React.createElement("ul", null, following.map((followee) => {
+                    return (React.createElement("li", { key: (0, utilities_6.getId)(followee).href },
+                        React.createElement("a", { href: (0, utilities_6.getId)(followee).href || '#' }, (0, utilities_6.getId)(followee).href)));
                 })),
-                React.createElement("h2", null, "Requests"),
-                React.createElement("ul", null, requests.map(request => {
-                    return (React.createElement("li", null,
-                        React.createElement("a", { href: (0, utilities_4.getId)(request).href || '#' }, (0, utilities_4.getId)(request).href)));
-                })),
+                React.createElement("h2", null, "Recent Posts"),
+                posts.map((post) => {
+                    if (!post || post instanceof URL) {
+                        return null;
+                    }
+                    return (React.createElement(Activity_1.default, { key: (0, utilities_6.getId)(post).href, object: post }));
+                }),
+                streams.map((stream) => {
+                    if (!stream) {
+                        return null;
+                    }
+                    const items = [...stream.items, ...stream.orderedItems];
+                    return (React.createElement(React.Fragment, { key: stream.name },
+                        React.createElement("h2", null, stream.name),
+                        React.createElement("div", { role: "list" }, items.map((item) => (React.createElement(Entity_1.default, { role: "listitem", key: (0, utilities_6.getId)(item).href, object: post }))))));
+                }),
                 React.createElement("textarea", { defaultValue: JSON.stringify(entity, null, 2) })));
         };
     });
-    define("endpoints/handleGetUserPage", ["require", "exports", "react", "react-dom/server", "@activity-kit/utilities", "@activity-kit/endpoints", "pages/UserEntityPage", "utils/globals", "utils/globals"], function (require, exports, React, Server, utilities_5, endpoints_2, UserEntityPage_1, globals_2) {
+    define("endpoints/handleGetUserPage", ["require", "exports", "react", "react-dom/server", "@activity-kit/utilities", "@activity-kit/endpoints", "pages/UserEntityPage", "utils/globals", "utils/globals"], function (require, exports, React, Server, utilities_7, endpoints_2, UserEntityPage_1, globals_2) {
         "use strict";
         Object.defineProperty(exports, "__esModule", { value: true });
         exports.default = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             var _a;
             const endpoint = new endpoints_2.EntityGetEndpoint(req.activitypub, {
-                url: new URL(req.url, utilities_5.LOCAL_DOMAIN),
+                url: new URL(req.url, utilities_7.LOCAL_DOMAIN),
                 returnHtml: (_a = req.headers.accept) === null || _a === void 0 ? void 0 : _a.includes('text/html'),
             });
             const render = (_b) => __awaiter(void 0, void 0, void 0, function* () {
@@ -216,14 +368,14 @@
             res.end();
         });
     });
-    define("endpoints/handleGetEntityPage", ["require", "exports", "react", "react-dom/server", "@activity-kit/utilities", "@activity-kit/endpoints", "utils/globals", "utils/globals"], function (require, exports, React, Server, utilities_6, endpoints_3, globals_3) {
+    define("endpoints/handleGetEntityPage", ["require", "exports", "react", "react-dom/server", "@activity-kit/utilities", "@activity-kit/endpoints", "utils/globals", "utils/globals"], function (require, exports, React, Server, utilities_8, endpoints_3, globals_3) {
         "use strict";
         Object.defineProperty(exports, "__esModule", { value: true });
         function default_1(PageComponent) {
             return (req, res) => __awaiter(this, void 0, void 0, function* () {
                 var _a;
                 const endpoint = new endpoints_3.EntityGetEndpoint(req.activitypub, {
-                    url: new URL(req.url, utilities_6.LOCAL_DOMAIN),
+                    url: new URL(req.url, utilities_8.LOCAL_DOMAIN),
                     returnHtml: (_a = req.headers.accept) === null || _a === void 0 ? void 0 : _a.includes('text/html'),
                 });
                 const render = (_b) => __awaiter(this, void 0, void 0, function* () {
@@ -264,7 +416,7 @@
                         React.createElement("span", { className: "error-message" })),
                     React.createElement("button", { type: "submit" }, "Submit")))));
     });
-    define("components/SignUpForm", ["require", "exports", "react", "utils/globals"], function (require, exports, React) {
+    define("components/Forms/SignUpForm", ["require", "exports", "react", "utils/globals"], function (require, exports, React) {
         "use strict";
         Object.defineProperty(exports, "__esModule", { value: true });
         exports.default = () => (React.createElement("tl-sign-up-form", null,
@@ -302,7 +454,7 @@
                         React.createElement("span", { className: "error-message" })),
                     React.createElement("button", { type: "submit" }, "Submit")))));
     });
-    define("components/CreatePostForm", ["require", "exports", "react", "@activity-kit/types", "@activity-kit/utilities", "utils/globals"], function (require, exports, React, AP, utilities_7) {
+    define("components/Forms/CreatePostForm", ["require", "exports", "react", "@activity-kit/types", "@activity-kit/utilities", "utils/globals"], function (require, exports, React, AP, utilities_9) {
         "use strict";
         Object.defineProperty(exports, "__esModule", { value: true });
         exports.default = ({ user }) => (React.createElement("tl-create-post-form", null,
@@ -311,7 +463,7 @@
                 React.createElement("link", { rel: "stylesheet", href: "/styles/forms.css" }),
                 React.createElement("link", { rel: "stylesheet", href: "/styles/buttons.css" }),
                 React.createElement("link", { rel: "stylesheet", href: "/styles/components/CreatePostForm.css" }),
-                React.createElement("form", { action: (0, utilities_7.getId)(user.outbox).href, noValidate: true },
+                React.createElement("form", { action: (0, utilities_9.getId)(user.outbox).href, noValidate: true },
                     React.createElement("select", { name: "type" }, Object.values(AP.ExtendedObjectTypes).map((type) => (React.createElement("option", { value: type, selected: type === AP.ExtendedObjectTypes.NOTE }, type)))),
                     React.createElement("label", null,
                         React.createElement("span", { className: "label-text" }, "Body Content"),
@@ -319,7 +471,7 @@
                         React.createElement("span", { className: "error-message" })),
                     React.createElement("button", { type: "submit" }, "Submit")))));
     });
-    define("pages/HomePage", ["require", "exports", "react", "components/PageChrome", "components/LoginForm", "components/SignUpForm", "components/CreatePostForm"], function (require, exports, React, PageChrome_2, LoginForm_1, SignUpForm_1, CreatePostForm_1) {
+    define("pages/HomePage", ["require", "exports", "react", "components/Chrome/PageChrome", "components/LoginForm", "components/Forms/SignUpForm", "components/Forms/CreatePostForm"], function (require, exports, React, PageChrome_2, LoginForm_1, SignUpForm_1, CreatePostForm_1) {
         "use strict";
         Object.defineProperty(exports, "__esModule", { value: true });
         exports.default = ({ user }) => (React.createElement(PageChrome_2.default, { title: "Home Page", user: user }, user ? (React.createElement(React.Fragment, null,
@@ -338,167 +490,52 @@
                 React.createElement("h2", { id: "signup-heading" }, "Sign Up"),
                 React.createElement(SignUpForm_1.default, null))))));
     });
-    define("pages/InboxEntityPage", ["require", "exports", "react", "@activity-kit/utilities", "components/PageChrome"], function (require, exports, React, utilities_8, PageChrome_3) {
+    define("pages/InboxEntityPage", ["require", "exports", "react", "@activity-kit/utilities", "components/Chrome/PageChrome"], function (require, exports, React, utilities_10, PageChrome_3) {
         "use strict";
         Object.defineProperty(exports, "__esModule", { value: true });
         exports.default = ({ entity, user }) => (React.createElement(PageChrome_3.default, { title: entity.name || 'Inbox', user: user },
             React.createElement("h1", null, entity.name),
             React.createElement("ul", null,
                 React.createElement("li", null,
-                    React.createElement("a", { href: (0, utilities_8.getId)(entity.first).href }, "First Page")))));
+                    React.createElement("a", { href: (0, utilities_10.getId)(entity.first).href }, "First Page")))));
     });
-    define("components/CreateNoteFeedObject", ["require", "exports", "react", "utils/globals"], function (require, exports, React) {
-        "use strict";
-        Object.defineProperty(exports, "__esModule", { value: true });
-        exports.default = ({ object }) => {
-            return (React.createElement("tl-create-note-feed-object", { role: "article" },
-                React.createElement("template", { shadowrootmode: "open" },
-                    React.createElement("link", { rel: "stylesheet", href: "/styles/global.css" }),
-                    React.createElement("link", { rel: "stylesheet", href: "/styles/components/FeedObject.css" }),
-                    React.createElement("link", { rel: "stylesheet", href: "/styles/components/CreateNoteFeedObject.css" }),
-                    React.createElement("header", null, object.summary),
-                    React.createElement("dl", null,
-                        React.createElement("dt", null, "Published"),
-                        React.createElement("dd", null,
-                            React.createElement("time", { dateTime: object.published.toISOString() }, object.published.toLocaleString()))),
-                    React.createElement("p", null, object.content))));
-        };
-    });
-    define("components/CreatePersonFeedObject", ["require", "exports", "react", "utils/globals"], function (require, exports, React) {
-        "use strict";
-        Object.defineProperty(exports, "__esModule", { value: true });
-        exports.default = ({ object }) => {
-            return (React.createElement("tl-create-person-feed-object", { role: "article" },
-                React.createElement("template", { shadowrootmode: "open" },
-                    React.createElement("link", { rel: "stylesheet", href: "/styles/global.css" }),
-                    React.createElement("link", { rel: "stylesheet", href: "/styles/components/FeedObject.css" }),
-                    React.createElement("link", { rel: "stylesheet", href: "/styles/components/CreatePersonFeedObject.css" }),
-                    React.createElement("header", null,
-                        "@",
-                        object.preferredUsername),
-                    React.createElement("dl", null,
-                        React.createElement("dt", null, "Name"),
-                        React.createElement("dd", null, object.name),
-                        React.createElement("dt", null, "Created"),
-                        React.createElement("dd", null,
-                            React.createElement("time", { dateTime: object.published.toISOString() }, object.published.toLocaleString()))),
-                    React.createElement("p", null, object.summary))));
-        };
-    });
-    define("components/CreateFeedObject", ["require", "exports", "react", "@activity-kit/types", "@activity-kit/type-utilities", "components/CreateNoteFeedObject", "components/CreatePersonFeedObject", "@activity-kit/utilities", "utils/globals"], function (require, exports, React, AP, type_utilities_1, CreateNoteFeedObject_1, CreatePersonFeedObject_1, utilities_9) {
-        "use strict";
-        Object.defineProperty(exports, "__esModule", { value: true });
-        exports.default = ({ activity }) => {
-            const object = (0, utilities_9.getEntity)(activity.object);
-            (0, type_utilities_1.assertIsApEntity)(object);
-            const actor = (0, utilities_9.getEntity)(activity.actor);
-            (0, type_utilities_1.assertIsApActor)(actor);
-            let objectHtml = (React.createElement("p", null, `The object type "${object.type}" is not supported.`));
-            if ((0, type_utilities_1.isType)(object, AP.ExtendedObjectTypes.NOTE)) {
-                objectHtml = React.createElement(CreateNoteFeedObject_1.default, { object: object });
-            }
-            if ((0, type_utilities_1.isType)(object, AP.ActorTypes.PERSON)) {
-                objectHtml = React.createElement(CreatePersonFeedObject_1.default, { object: object });
-            }
-            return (React.createElement("tl-create-feed-object", { role: "article" },
-                React.createElement("template", { shadowrootmode: "open" },
-                    React.createElement("link", { rel: "stylesheet", href: "/styles/global.css" }),
-                    React.createElement("link", { rel: "stylesheet", href: "/styles/components/FeedObject.css" }),
-                    React.createElement("link", { rel: "stylesheet", href: "/styles/components/CreateFeedObject.css" }),
-                    React.createElement("header", null,
-                        "New ",
-                        activity.type,
-                        " Activity by @",
-                        actor.preferredUsername,
-                        " on ",
-                        activity.published.toLocaleString()),
-                    objectHtml)));
-        };
-    });
-    define("components/FollowFeedObject", ["require", "exports", "react", "@activity-kit/type-utilities", "@activity-kit/utilities", "utils/globals"], function (require, exports, React, type_utilities_2, utilities_10) {
-        "use strict";
-        Object.defineProperty(exports, "__esModule", { value: true });
-        exports.default = ({ activity }) => {
-            const object = (0, utilities_10.getEntity)(activity.object);
-            (0, type_utilities_2.assertIsApActor)(object);
-            const actor = (0, utilities_10.getEntity)(activity.actor);
-            (0, type_utilities_2.assertIsApActor)(actor);
-            return (React.createElement("tl-create-feed-object", { role: "article" },
-                React.createElement("template", { shadowrootmode: "open" },
-                    React.createElement("link", { rel: "stylesheet", href: "/styles/global.css" }),
-                    React.createElement("link", { rel: "stylesheet", href: "/styles/components/FeedObject.css" }),
-                    React.createElement("link", { rel: "stylesheet", href: "/styles/components/CreateFeedObject.css" }),
-                    React.createElement("header", null,
-                        "New ",
-                        activity.type,
-                        " Activity by @",
-                        actor.preferredUsername,
-                        " on",
-                        React.createElement("a", { href: (0, utilities_10.getId)(activity).href }, activity.published.toLocaleString())),
-                    "To:",
-                    React.createElement("a", { href: (0, utilities_10.getId)(object).href },
-                        "@",
-                        object.preferredUsername))));
-        };
-    });
-    define("components/FeedObject", ["require", "exports", "react", "@activity-kit/types", "@activity-kit/type-utilities", "components/CreateFeedObject", "components/FollowFeedObject", "utils/globals"], function (require, exports, React, AP, type_utilities_3, CreateFeedObject_1, FollowFeedObject_1) {
-        "use strict";
-        Object.defineProperty(exports, "__esModule", { value: true });
-        exports.default = ({ object }) => {
-            let objectHtml = null;
-            if ((0, type_utilities_3.isType)(object, AP.ActivityTypes.CREATE)) {
-                objectHtml = React.createElement(CreateFeedObject_1.default, { activity: object });
-            }
-            if ((0, type_utilities_3.isType)(object, AP.ActivityTypes.FOLLOW)) {
-                objectHtml = React.createElement(FollowFeedObject_1.default, { activity: object });
-            }
-            return (React.createElement("tl-feed-object", { role: "article" },
-                React.createElement("template", { shadowrootmode: "open" },
-                    React.createElement("link", { rel: "stylesheet", href: "/styles/global.css" }),
-                    objectHtml)));
-        };
-    });
-    define("components/Feed", ["require", "exports", "react", "components/FeedObject", "utils/globals"], function (require, exports, React, FeedObject_1) {
+    define("components/Feed/ActivityFeed", ["require", "exports", "react", "@activity-kit/utilities", "components/Feed/Activity", "@activity-kit/type-utilities", "utils/globals"], function (require, exports, React, utilities_11, Activity_2, type_utilities_4) {
         "use strict";
         Object.defineProperty(exports, "__esModule", { value: true });
         exports.default = ({ collectionPage: page }) => {
             const unorderedItems = page.items ? (Array.isArray(page.items) ? page.items : [page.items]) : [];
             const orderedItems = page.orderedItems ? (Array.isArray(page.orderedItems) ? page.orderedItems : [page.orderedItems]) : [];
             const items = orderedItems.length ? orderedItems : unorderedItems;
-            const castIsLinkType = (item) => {
-                const types = Array.isArray(item.type) ? item.type : [item.type];
-                return types.includes('Link') || types.includes('Mention');
-            };
             return (React.createElement("tl-feed", { role: "feed" },
                 React.createElement("template", { shadowrootmode: "open" },
                     React.createElement("link", { rel: "stylesheet", href: "/styles/global.css" }),
                     React.createElement("link", { rel: "stylesheet", href: "/styles/components/CollectionFeed.css" }),
                     items.map((item) => {
                         if (typeof item === 'string' || item instanceof URL) {
-                            throw new Error(`Received the Object's ID instead of the Object.`);
+                            throw new Error(`Received the Entity's ID instead of the Entity.`);
                         }
-                        if (castIsLinkType(item)) {
-                            throw new Error(`Received a Link instead of an Object.`);
+                        if (!type_utilities_4.guard.isApActivity(item)) {
+                            throw new Error(`Received a non-Activity object.`);
                         }
-                        return (React.createElement(FeedObject_1.default, { key: item.id.href, object: item }));
+                        return (React.createElement(Activity_2.default, { key: (0, utilities_11.getId)(item).href, object: item }));
                     }))));
         };
     });
-    define("pages/InboxPageEntityPage", ["require", "exports", "react", "components/PageChrome", "components/Feed"], function (require, exports, React, PageChrome_4, Feed_1) {
+    define("pages/InboxPageEntityPage", ["require", "exports", "react", "components/Chrome/PageChrome", "components/Feed/ActivityFeed"], function (require, exports, React, PageChrome_4, ActivityFeed_1) {
         "use strict";
         Object.defineProperty(exports, "__esModule", { value: true });
         exports.default = ({ entity, user }) => (React.createElement(PageChrome_4.default, { title: entity.name || 'Inbox', user: user },
             React.createElement("h1", null, entity.name),
-            React.createElement(Feed_1.default, { collectionPage: entity })));
+            React.createElement(ActivityFeed_1.default, { collectionPage: entity })));
     });
-    define("pages/FollowEntityPage", ["require", "exports", "react", "components/PageChrome"], function (require, exports, React, PageChrome_5) {
+    define("pages/FollowEntityPage", ["require", "exports", "react", "components/Chrome/PageChrome"], function (require, exports, React, PageChrome_5) {
         "use strict";
         Object.defineProperty(exports, "__esModule", { value: true });
         exports.default = ({ entity, user }) => (React.createElement(PageChrome_5.default, { title: "Follow Entity", user: user },
             React.createElement("h1", null, "Follow Entity"),
             React.createElement("textarea", { defaultValue: JSON.stringify(entity, null, 2) })));
     });
-    define("index", ["require", "exports", "react", "react-dom/server", "express", "body-parser", "fs", "cookie-parser", "mongodb", "@activity-kit/db-mongo", "@activity-kit/auth-token", "@activity-kit/crypto-node", "@activity-kit/storage-ftp", "@activity-kit/endpoints", "@activity-kit/core", "@activity-kit/utilities", "utils/globals", "utils/middleware", "endpoints/handleGetUserPage", "endpoints/handleGetEntityPage", "pages/HomePage", "pages/InboxEntityPage", "pages/InboxPageEntityPage", "pages/InboxEntityPage", "pages/InboxPageEntityPage", "pages/FollowEntityPage"], function (require, exports, React, Server, express, bodyParser, fs, cookies, mongodb_1, db_mongo_1, auth_token_1, crypto_node_1, storage_ftp_1, endpoints_4, core_1, utilities_11, globals_4, middleware_1, handleGetUserPage_1, handleGetEntityPage_1, HomePage_1, InboxEntityPage_1, InboxPageEntityPage_1, InboxEntityPage_2, InboxPageEntityPage_2, FollowEntityPage_1) {
+    define("index", ["require", "exports", "react", "react-dom/server", "express", "body-parser", "fs", "cookie-parser", "mongodb", "@activity-kit/db-mongo", "@activity-kit/auth-token", "@activity-kit/crypto-node", "@activity-kit/storage-ftp", "@activity-kit/endpoints", "@activity-kit/core", "@activity-kit/utilities", "utils/globals", "utils/middleware", "endpoints/handleGetUserPage", "endpoints/handleGetEntityPage", "pages/HomePage", "pages/InboxEntityPage", "pages/InboxPageEntityPage", "pages/InboxEntityPage", "pages/InboxPageEntityPage", "pages/FollowEntityPage"], function (require, exports, React, Server, express, bodyParser, fs, cookies, mongodb_1, db_mongo_1, auth_token_1, crypto_node_1, storage_ftp_1, endpoints_4, core_1, utilities_12, globals_4, middleware_1, handleGetUserPage_1, handleGetEntityPage_1, HomePage_1, InboxEntityPage_1, InboxPageEntityPage_1, InboxEntityPage_2, InboxPageEntityPage_2, FollowEntityPage_1) {
         "use strict";
         Object.defineProperty(exports, "__esModule", { value: true });
         (() => __awaiter(void 0, void 0, void 0, function* () {
@@ -544,9 +581,9 @@
                 }
                 const endpoint = new endpoints_4.OutboxPostEndpoint(core, {
                     body: req.body,
-                    url: new URL(req.url, utilities_11.LOCAL_DOMAIN),
+                    url: new URL(req.url, utilities_12.LOCAL_DOMAIN),
                     actor: req.user,
-                    routes: utilities_11.DEFAULT_ROUTES,
+                    routes: utilities_12.DEFAULT_ROUTES,
                 });
                 const result = yield endpoint.respond();
                 res.status(result.statusCode);
@@ -558,7 +595,7 @@
             app.post('/user', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 const endpoint = new endpoints_4.UserPostEndpoint(core, {
                     body: req.body,
-                    routes: utilities_11.DEFAULT_ROUTES,
+                    routes: utilities_12.DEFAULT_ROUTES,
                 });
                 const result = yield endpoint.respond();
                 res.status(result.statusCode);

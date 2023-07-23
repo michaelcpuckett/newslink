@@ -1,5 +1,5 @@
 import * as React from 'react';
-import '../utils/globals';
+import '../../utils/globals';
 import { getId } from '@activity-kit/utilities';
 import * as AP from  '@activity-kit/types';
 

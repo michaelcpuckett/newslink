@@ -1,19 +1,17 @@
 import * as React from 'react';
-import '../utils/globals';
+import '../../utils/globals';
 import * as AP from '@activity-kit/types';
-import {isType, assertIsApActor, assertIsApEntity } from '@activity-kit/type-utilities';
-import CreateNoteFeedObject from './CreateNoteFeedObject';
-import CreatePersonFeedObject from './CreatePersonFeedObject';
+import { assert } from '@activity-kit/type-utilities';
 import {getEntity, getId} from '@activity-kit/utilities';
 
 export default ({ activity }: { activity: AP.Follow }) => {
   const object = getEntity(activity.object);
 
-  assertIsApActor(object);
+  assert.isApActor(object);
 
   const actor = getEntity(activity.actor);
 
-  assertIsApActor(actor);
+  assert.isApActor(actor);
 
   return (
     <tl-create-feed-object role="article">

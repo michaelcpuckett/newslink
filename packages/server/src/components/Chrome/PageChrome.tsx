@@ -2,6 +2,7 @@ import * as React from 'react';
 import * as AP from  '@activity-kit/types';
 import Header from './Header';
 import SidebarNav from './SidebarNav';
+import Footer from './Footer';
 
 export default ({ title, user, children }: { title: string; user: AP.Actor | null; children: React.ReactNode }) => (
   <html lang="en">
@@ -16,6 +17,7 @@ export default ({ title, user, children }: { title: string; user: AP.Actor | nul
       <main>
         {children}
       </main>
+      <Footer user={user} />
       <script src="/scripts/index.js" type="module"></script>
     </body>
   </html>

@@ -2,13 +2,36 @@ import * as React from 'react';
 import * as AP from '@activity-kit/types';
 import { getArray, getEntity, getId } from '@activity-kit/utilities';
 
-import PageChrome from '../components/PageChrome';
-import FollowForm from '../components/FollowForm';
+import PageChrome from '../components/Chrome/PageChrome';
+import FollowForm from '../components/Forms/FollowForm';
+import FeedActivity from '../components/Feed/Activity';
+import FeedEntity from '../components/Feed/Entity';
 
 export default ({ entity, user }: { entity: AP.Actor, user: AP.Actor | null }) => {
-  const followers = getArray(getEntity<AP.Collection>(entity.followers)?.items);
-  const following = getArray(getEntity<AP.Collection>(entity.following)?.items);
-  const requests = getArray(getEntity<AP.Collection>(entity.streams.find(stream => getEntity(stream)?.name === 'Requests'))?.items);
+  const getItems = (collection: AP.EitherCollection | null) => {
+    if (!collection) {
+      return [];
+    }
+
+    return [...getArray(collection.items), ...getArray(collection.orderedItems)];
+  }
+
+  const posts = getItems(getEntity<AP.OrderedCollection>(entity.outbox));
+  const followers = getItems(getEntity<AP.OrderedCollection>(entity.followers));
+  const following = getItems(getEntity<AP.OrderedCollection>(entity.following));
+  const streams = entity.streams.map((stream) => {
+    const entity = getEntity<AP.EitherCollection>(stream);
+
+    if (!entity) {
+      return null;
+    }
+
+    return {
+      ...entity,
+      items: getArray(entity.items),
+      orderedItems: getArray(entity.orderedItems),
+    };
+  });
 
   return (
     <PageChrome
@@ -53,10 +76,10 @@ export default ({ entity, user }: { entity: AP.Actor, user: AP.Actor | null }) =
         Followers
       </h2>
       <ul>
-        {followers.map(follower => {
+        {followers.map((follower) => {
           return (
-            <li>
-              <a href={getId(follower).href || '#'}>
+            <li key={getId(follower).href}>
+              <a href={getId(follower).href}>
                 {getId(follower).href}
               </a>
             </li>
@@ -68,9 +91,9 @@ export default ({ entity, user }: { entity: AP.Actor, user: AP.Actor | null }) =
         Following
       </h2>
       <ul>
-        {following.map(followee => {
+        {following.map((followee) => {
           return (
-            <li>
+            <li key={getId(followee).href}>
               <a href={getId(followee).href || '#'}>
                 {getId(followee).href}
               </a>
@@ -78,22 +101,49 @@ export default ({ entity, user }: { entity: AP.Actor, user: AP.Actor | null }) =
           );
         })}
       </ul>
-      
-      <h2>
-        Requests
-      </h2>
-      <ul>
-        {requests.map(request => {
-          return (
-            <li>
-              <a href={getId(request).href || '#'}>
-                {getId(request).href}
-              </a>
-            </li>
-          );
-        })}
-      </ul>
 
+      <h2>
+        Recent Posts
+      </h2>
+
+      {posts.map((post) => {
+        if (!post || post instanceof URL) {
+          return null;
+        }
+
+        return (
+          <FeedActivity
+            key={getId(post).href}
+            object={post}
+          />
+        );
+      })}
+
+      {streams.map((stream) => {
+        if (!stream) {
+          return null;
+        }
+
+        const items = [...stream.items, ...stream.orderedItems];
+
+        return (
+          <React.Fragment key={stream.name}>
+            <h2>
+              {stream.name}
+            </h2>
+            <div role="list">
+              {items.map((item) => (
+                <FeedEntity
+                  role="listitem"
+                  key={getId(item).href}
+                  object={post}
+                />
+              ))}
+            </div>
+          </React.Fragment>
+        );
+      })}
+      
       <textarea defaultValue={JSON.stringify(entity, null, 2)} />
     </PageChrome>
   );

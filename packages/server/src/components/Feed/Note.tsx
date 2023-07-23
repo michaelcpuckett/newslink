@@ -1,10 +1,10 @@
 import * as React from 'react';
-import '../utils/globals';
+import '../../utils/globals';
 import * as AP from  '@activity-kit/types';
 
 export default ({ object }: { object: AP.Note; }) => {
   return (
-    <tl-create-note-feed-object role="article">
+    <tl-create-note role="article">
       <template shadowrootmode="open">
         <link rel="stylesheet" href="/styles/global.css" />
         <link rel="stylesheet" href="/styles/components/FeedObject.css" />
@@ -24,14 +24,14 @@ export default ({ object }: { object: AP.Note; }) => {
         </dl>
         <p>{object.content}</p>
       </template>
-    </tl-create-note-feed-object>
+    </tl-create-note>
   )
 };
 
 declare global {
   namespace JSX {
     interface IntrinsicElements {
-      ["tl-create-note-feed-object"]: React.DetailedHTMLProps<
+      ["tl-create-note"]: React.DetailedHTMLProps<
         React.HTMLAttributes<HTMLElement>,
         HTMLElement
       >;

@@ -1,10 +1,10 @@
 import * as React from 'react';
 import * as AP from  '@activity-kit/types';
 
-import PageChrome from '../components/PageChrome';
+import PageChrome from '../components/Chrome/PageChrome';
 import LoginForm from '../components/LoginForm';
-import SignUpForm from '../components/SignUpForm';
-import CreatePostForm from '../components/CreatePostForm';
+import SignUpForm from '../components/Forms/SignUpForm';
+import CreatePostForm from '../components/Forms/CreatePostForm';
 
 export default ({ user }: { user: AP.Actor | null }) => (
   <PageChrome

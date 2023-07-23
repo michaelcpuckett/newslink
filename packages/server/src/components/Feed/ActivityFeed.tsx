@@ -1,18 +1,15 @@
 import * as React from 'react';
-import '../utils/globals';
 import * as AP from  '@activity-kit/types';
-import FeedObject from './FeedObject';
+import { getId } from '@activity-kit/utilities';
+
+import Activity from './Activity';
+import '../../utils/globals';
+import { guard } from '@activity-kit/type-utilities';
 
 export default ({ collectionPage: page }: { collectionPage: AP.EitherCollectionPage }) => {
   const unorderedItems = page.items ? (Array.isArray(page.items) ? page.items : [page.items]) : [];
   const orderedItems = page.orderedItems ? (Array.isArray(page.orderedItems) ? page.orderedItems : [page.orderedItems ]) : [];
   const items = orderedItems.length ? orderedItems : unorderedItems;
-
-  const castIsLinkType = (item: AP.Entity): item is AP.Link => {
-    const types = Array.isArray(item.type) ? item.type : [item.type];
-
-    return types.includes('Link') || types.includes('Mention');
-  };
 
   return (
     <tl-feed role="feed">
@@ -21,15 +18,18 @@ export default ({ collectionPage: page }: { collectionPage: AP.EitherCollectionP
         <link rel="stylesheet" href="/styles/components/CollectionFeed.css" />
         {items.map((item) => {
           if (typeof item === 'string' || item instanceof URL) {
-            throw new Error(`Received the Object's ID instead of the Object.`);
+            throw new Error(`Received the Entity's ID instead of the Entity.`);
           }
 
-          if (castIsLinkType(item)) {
-            throw new Error(`Received a Link instead of an Object.`);
+          if (!guard.isApActivity(item)) {
+            throw new Error(`Received a non-Activity object.`);
           }
-
+          
           return (
-            <FeedObject key={item.id.href} object={item} />
+            <Activity
+              key={getId(item).href}
+              object={item}
+            />
           );
         })}
       </template>

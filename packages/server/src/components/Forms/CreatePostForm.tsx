@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as AP from  '@activity-kit/types';
 import { getId } from '@activity-kit/utilities';
-import '../utils/globals';
+import '../../utils/globals';
 
 export default ({ user }: { user: AP.Actor }) => (
   <tl-create-post-form>

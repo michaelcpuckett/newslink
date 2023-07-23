@@ -1,19 +1,19 @@
 import * as React from 'react';
-import '../utils/globals';
+import '../../utils/globals';
 import * as AP from '@activity-kit/types';
-import {isType, assertIsApActor, assertIsApEntity } from '@activity-kit/type-utilities';
-import CreateNoteFeedObject from './CreateNoteFeedObject';
-import CreatePersonFeedObject from './CreatePersonFeedObject';
+import { guard, assert } from '@activity-kit/type-utilities';
+import CreateNote from './Note';
+import CreatePerson from './Person';
 import {getEntity} from '@activity-kit/utilities';
 
 export default ({ activity }: { activity: AP.Create }) => {
   const object = getEntity(activity.object);
 
-  assertIsApEntity(object);
+  assert.isApEntity(object);
 
   const actor = getEntity(activity.actor);
 
-  assertIsApActor(actor);
+  assert.isApActor(actor);
 
   let objectHtml: JSX.Element = (
     <p>
@@ -21,16 +21,16 @@ export default ({ activity }: { activity: AP.Create }) => {
     </p>
   );
 
-  if (isType<AP.Note>(object, AP.ExtendedObjectTypes.NOTE)) {
-    objectHtml = <CreateNoteFeedObject object={object} />
+  if (guard.isType<AP.Note>(object, AP.ExtendedObjectTypes.NOTE)) {
+    objectHtml = <CreateNote object={object} />
   }
 
-  if (isType<AP.Person>(object, AP.ActorTypes.PERSON)) {
-    objectHtml = <CreatePersonFeedObject object={object} />
+  if (guard.isType<AP.Person>(object, AP.ActorTypes.PERSON)) {
+    objectHtml = <CreatePerson object={object} />
   }
 
   return (
-    <tl-create-feed-object role="article">
+    <tl-create-activity role="article">
       <template shadowrootmode="open">
         <link rel="stylesheet" href="/styles/global.css" />
         <link rel="stylesheet" href="/styles/components/FeedObject.css" />
@@ -40,14 +40,14 @@ export default ({ activity }: { activity: AP.Create }) => {
         </header>
         {objectHtml}
       </template>
-    </tl-create-feed-object>
+    </tl-create-activity>
   )
 };
 
 declare global {
   namespace JSX {
     interface IntrinsicElements {
-      ["tl-create-feed-object"]: React.DetailedHTMLProps<
+      ["tl-create-activity"]: React.DetailedHTMLProps<
         React.HTMLAttributes<HTMLElement>,
         HTMLElement
       >;

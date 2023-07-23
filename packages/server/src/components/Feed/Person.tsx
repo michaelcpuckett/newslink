@@ -1,5 +1,5 @@
 import * as React from 'react';
-import '../utils/globals';
+import '../../utils/globals';
 import * as AP from  '@activity-kit/types';
 
 export default ({ object }: { object: AP.Person; }) => {

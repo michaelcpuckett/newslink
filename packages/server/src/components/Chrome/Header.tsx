@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as AP from  '@activity-kit/types';
-import '../utils/globals';
+import '../../utils/globals';
 
 export default ({ user }: { user: AP.Actor | null }) => (
   <tl-header>

@@ -8,11 +8,11 @@ import FollowFeedObject from './FollowFeedObject';
 export default ({ object }: { object: AP.CoreObject }) => {
   let objectHtml: JSX.Element | null = null;
 
-  if (isType(object, AP.ActivityTypes.CREATE)) {
+  if (isType<AP.Create>(object, AP.ActivityTypes.CREATE)) {
     objectHtml = <CreateFeedObject activity={object} />;
   }
 
-  if (isType(object, AP.ActivityTypes.FOLLOW)) {
+  if (isType<AP.Follow>(object, AP.ActivityTypes.FOLLOW)) {
     objectHtml = <FollowFeedObject activity={object} />;
   }
 

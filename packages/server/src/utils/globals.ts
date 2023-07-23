@@ -6,6 +6,15 @@ declare module 'express' {
     activitypub: CoreLibrary;
     user: AP.Actor | null;
   }
+
+  interface Response {
+    respondWith: (data: {
+      statusCode: number;
+      location?: string;
+      body?: string;
+      json?: unknown;
+    }) => void;
+  }
 }
 
 declare module 'react' {

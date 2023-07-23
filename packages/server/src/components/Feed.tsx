@@ -1,11 +1,11 @@
-import * as React from 'react';[]
+import * as React from 'react';
 import '../utils/globals';
 import * as AP from  '@activity-kit/types';
 import FeedObject from './FeedObject';
 
-export default ({ collection }: { collection: AP.EitherCollection }) => {
-  const unorderedItems = collection.items ? (Array.isArray(collection.items) ? collection.items : [collection.items]) : [];
-  const orderedItems = collection.orderedItems ? (Array.isArray(collection.orderedItems) ? collection.orderedItems : [collection.orderedItems ]) : [];
+export default ({ collectionPage: page }: { collectionPage: AP.EitherCollectionPage }) => {
+  const unorderedItems = page.items ? (Array.isArray(page.items) ? page.items : [page.items]) : [];
+  const orderedItems = page.orderedItems ? (Array.isArray(page.orderedItems) ? page.orderedItems : [page.orderedItems ]) : [];
   const items = orderedItems.length ? orderedItems : unorderedItems;
 
   const castIsLinkType = (item: AP.Entity): item is AP.Link => {

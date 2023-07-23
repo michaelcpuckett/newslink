@@ -1,5 +1,6 @@
 import * as React from 'react';
 import * as Server from 'react-dom/server';
+import * as AP from '@activity-kit/types';
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as fs from 'fs';
@@ -9,19 +10,22 @@ import { MongoDbAdapter } from '@activity-kit/db-mongo';
 import { TokenAuthAdapter } from '@activity-kit/auth-token';
 import { NodeCryptoAdapter } from '@activity-kit/crypto-node';
 import { FtpStorageAdapter } from '@activity-kit/storage-ftp';
-import { OutboxPostEndpoint, UserPostEndpoint } from '@activity-kit/endpoints';
+import { EntityGetEndpoint, OutboxPostEndpoint, UserPostEndpoint } from '@activity-kit/endpoints';
 import { Core } from '@activity-kit/core';
 import { DEFAULT_ROUTES, LOCAL_DOMAIN } from '@activity-kit/utilities';
 import { HTML_DOCTYPE } from './utils/globals';
+import middleware from './utils/middleware';
 
 import handleGetCollectionPage from './endpoints/handleGetCollectionPage';
 import handleGetUserPage from './endpoints/handleGetUserPage';
+import handleGetEntityPage from './endpoints/handleGetEntityPage';
 
 import HomePage from './pages/HomePage';
 import InboxEntityPage from './pages/InboxEntityPage';
 import InboxPageEntityPage from './pages/InboxPageEntityPage';
 import OutboxEntityPage from './pages/InboxEntityPage';
 import OutboxPageEntityPage from './pages/InboxPageEntityPage';
+import FollowEntityPage from './pages/FollowEntityPage';
 
 (async () => {
   const app = express();
@@ -57,31 +61,26 @@ import OutboxPageEntityPage from './pages/InboxPageEntityPage';
     storage: ftpStorageAdapter,
   });
 
-  app.use(async (req: express.Request, res, next) => {
-    req.activitypub = core;
-    const { __session: token } = req.cookies;
-    const userId = await req.activitypub.getUserIdByToken(token);
-    const user = await req.activitypub.getActorByUserId(userId);
-    req.user = user;
-    next();
-  });
+  app.use(middleware(core));
 
-  app.get('/', async (req: express.Request, res) => {
+  app.get('/', async (req: express.Request, res: express.Response) => {
     res.send(HTML_DOCTYPE + Server.renderToString(<HomePage user={req.user} />));
     res.end();
   });
 
-  app.get('/@:username/inbox', handleGetCollectionPage(InboxEntityPage));
+  app.get('/@:username/inbox', handleGetEntityPage<AP.OrderedCollection>(InboxEntityPage));
 
-  app.get('/@:username/inbox/page/:page', handleGetCollectionPage(InboxPageEntityPage));
+  app.get('/@:username/inbox/page/:page', handleGetEntityPage<AP.OrderedCollectionPage>(InboxPageEntityPage));
 
-  app.get('/@:username/outbox', handleGetCollectionPage(OutboxEntityPage));
+  app.get('/@:username/outbox', handleGetEntityPage<AP.OrderedCollection>(OutboxEntityPage));
 
-  app.get('/@:username/outbox/page/:page', handleGetCollectionPage(OutboxPageEntityPage));
+  app.get('/@:username/outbox/page/:page', handleGetEntityPage<AP.OrderedCollectionPage>(OutboxPageEntityPage));
+
+  app.get('/follow/:guid', handleGetEntityPage<AP.Follow>(FollowEntityPage));
 
   app.get('/@:username', handleGetUserPage);
 
-  app.post('/@:username/outbox', async (req: express.Request, res) => {
+  app.post('/@:username/outbox', async (req: express.Request, res: express.Response) => {
     if (!req.user) {
       res.status(401);
       res.end();
@@ -109,7 +108,7 @@ import OutboxPageEntityPage from './pages/InboxPageEntityPage';
     res.end();
   });
 
-  app.post('/user', async (req, res) => {
+  app.post('/user', async (req, res: express.Response) => {
     const endpoint = new UserPostEndpoint(
       core,
       {

@@ -4,30 +4,16 @@ import * as AP from '@activity-kit/types';
 import {isType, assertIsApActor, assertIsApEntity } from '@activity-kit/type-utilities';
 import CreateNoteFeedObject from './CreateNoteFeedObject';
 import CreatePersonFeedObject from './CreatePersonFeedObject';
-import {getEntity} from '@activity-kit/utilities';
+import {getEntity, getId} from '@activity-kit/utilities';
 
 export default ({ activity }: { activity: AP.Follow }) => {
   const object = getEntity(activity.object);
 
-  assertIsApEntity(object);
+  assertIsApActor(object);
 
   const actor = getEntity(activity.actor);
 
   assertIsApActor(actor);
-
-  let objectHtml: JSX.Element = (
-    <p>
-      {`The object type "${object.type}" is not supported.`}
-    </p>
-  );
-
-  if (isType<AP.Note>(object, AP.ExtendedObjectTypes.NOTE)) {
-    objectHtml = <CreateNoteFeedObject object={object} />
-  }
-
-  if (isType<AP.Person>(object, AP.ActorTypes.PERSON)) {
-    objectHtml = <CreatePersonFeedObject object={object} />
-  }
 
   return (
     <tl-create-feed-object role="article">
@@ -36,9 +22,15 @@ export default ({ activity }: { activity: AP.Follow }) => {
         <link rel="stylesheet" href="/styles/components/FeedObject.css" />
         <link rel="stylesheet" href="/styles/components/CreateFeedObject.css" />
         <header>
-          New {activity.type} Activity by @{actor.preferredUsername} on {activity.published.toLocaleString()}
+          New {activity.type} Activity by @{actor.preferredUsername} on
+          <a href={getId(activity).href}>
+            {activity.published.toLocaleString()}
+          </a>
         </header>
-        {objectHtml}
+        To:
+        <a href={getId(object).href}>
+          @{object.preferredUsername}
+        </a>
       </template>
     </tl-create-feed-object>
   )

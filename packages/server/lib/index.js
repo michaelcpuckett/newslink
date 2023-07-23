@@ -35,6 +35,34 @@
         exports.HTML_DOCTYPE = void 0;
         exports.HTML_DOCTYPE = '<!DOCTYPE html>';
     });
+    define("utils/middleware", ["require", "exports", "utils/globals"], function (require, exports) {
+        "use strict";
+        Object.defineProperty(exports, "__esModule", { value: true });
+        function respondWith(result) {
+            this.status(result.statusCode);
+            if (result.body) {
+                this.send(result.body);
+            }
+            else {
+                if (result.location) {
+                    this.set('Location', result.location);
+                }
+                if (result.json) {
+                    this.json(result.json);
+                }
+            }
+            this.end();
+        }
+        exports.default = (core) => (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+            req.activitypub = core;
+            const { __session: token } = req.cookies;
+            const userId = yield req.activitypub.getUserIdByToken(token);
+            const user = yield req.activitypub.getActorByUserId(userId);
+            req.user = user;
+            res.respondWith = respondWith.bind(res);
+            next();
+        });
+    });
     define("endpoints/handleGetCollectionPage", ["require", "exports", "react", "react-dom/server", "@activity-kit/utilities", "@activity-kit/endpoints", "utils/globals", "utils/globals"], function (require, exports, React, Server, utilities_1, endpoints_1, globals_1) {
         "use strict";
         Object.defineProperty(exports, "__esModule", { value: true });
@@ -92,6 +120,20 @@
                             React.createElement("li", null,
                                 React.createElement("a", { href: "/inbox" }, "Inbox"))))))));
     });
+    define("components/PageChrome", ["require", "exports", "react", "components/Header", "components/SidebarNav"], function (require, exports, React, Header_1, SidebarNav_1) {
+        "use strict";
+        Object.defineProperty(exports, "__esModule", { value: true });
+        exports.default = ({ title, user, children }) => (React.createElement("html", { lang: "en" },
+            React.createElement("head", null,
+                React.createElement("meta", { charSet: "utf-8" }),
+                React.createElement("title", null, title),
+                React.createElement("link", { href: "/styles/light-dom.css", rel: "stylesheet" })),
+            React.createElement("body", null,
+                React.createElement(Header_1.default, { user: user }),
+                React.createElement(SidebarNav_1.default, { user: user }),
+                React.createElement("main", null, children),
+                React.createElement("script", { src: "/scripts/index.js", type: "module" }))));
+    });
     define("components/FollowForm", ["require", "exports", "react", "@activity-kit/utilities", "utils/globals"], function (require, exports, React, utilities_3) {
         "use strict";
         Object.defineProperty(exports, "__esModule", { value: true });
@@ -107,42 +149,46 @@
                     React.createElement("input", { type: "hidden", name: "followers", value: (0, utilities_3.getId)(follower.followers).href }),
                     React.createElement("button", { type: "submit" }, "Follow")))));
     });
-    define("pages/UserEntityPage", ["require", "exports", "react", "components/Header", "components/SidebarNav", "components/FollowForm", "@activity-kit/utilities"], function (require, exports, React, Header_1, SidebarNav_1, FollowForm_1, utilities_4) {
+    define("pages/UserEntityPage", ["require", "exports", "react", "@activity-kit/utilities", "components/PageChrome", "components/FollowForm"], function (require, exports, React, utilities_4, PageChrome_1, FollowForm_1) {
         "use strict";
         Object.defineProperty(exports, "__esModule", { value: true });
         exports.default = ({ entity, user }) => {
-            return (React.createElement("html", { lang: "en" },
-                React.createElement("head", null,
-                    React.createElement("meta", { charSet: "utf-8" }),
-                    React.createElement("title", null,
-                        "@",
-                        entity.preferredUsername,
-                        " - Profile Page"),
-                    React.createElement("link", { href: "/styles/light-dom.css", rel: "stylesheet" })),
-                React.createElement("body", null,
-                    React.createElement(Header_1.default, { user: user }),
-                    React.createElement(SidebarNav_1.default, { user: user }),
-                    React.createElement("main", null,
-                        React.createElement("h1", null,
-                            "@",
-                            entity.preferredUsername),
-                        React.createElement("dl", null,
-                            React.createElement("dt", null, "Name"),
-                            React.createElement("dd", null, entity.name),
-                            React.createElement("dt", null, "Inbox Link"),
-                            React.createElement("dd", null,
-                                React.createElement("a", { href: entity.inbox instanceof URL ? entity.inbox.href : '#' }, entity.inbox instanceof URL ? 'Inbox' : 'No Inbox')),
-                            React.createElement("dt", null, "Outbox Link"),
-                            React.createElement("dd", null,
-                                React.createElement("a", { href: entity.outbox instanceof URL ? entity.outbox.href : '#' }, entity.outbox instanceof URL ? 'Outbox' : 'No Outbox'))),
-                        React.createElement("h2", null, "Follow"),
-                        React.createElement(FollowForm_1.default, { follower: user, followee: entity }),
-                        React.createElement("h2", null, "Followers"),
-                        React.createElement("ul", null, (0, utilities_4.getArray)(entity.followers).map(follower => {
-                            return (React.createElement("li", null,
-                                React.createElement("a", { href: (0, utilities_4.getId)(follower).href || '#' }, (0, utilities_4.getId)(follower).href)));
-                        }))),
-                    React.createElement("script", { src: "/scripts/index.js", type: "module" }))));
+            var _a, _b, _c;
+            const followers = (0, utilities_4.getArray)((_a = (0, utilities_4.getEntity)(entity.followers)) === null || _a === void 0 ? void 0 : _a.items);
+            const following = (0, utilities_4.getArray)((_b = (0, utilities_4.getEntity)(entity.following)) === null || _b === void 0 ? void 0 : _b.items);
+            const requests = (0, utilities_4.getArray)((_c = (0, utilities_4.getEntity)(entity.streams.find(stream => { var _a; return ((_a = (0, utilities_4.getEntity)(stream)) === null || _a === void 0 ? void 0 : _a.name) === 'Requests'; }))) === null || _c === void 0 ? void 0 : _c.items);
+            return (React.createElement(PageChrome_1.default, { title: entity.name || 'User', user: user },
+                React.createElement("h1", null,
+                    "@",
+                    entity.preferredUsername),
+                React.createElement("dl", null,
+                    React.createElement("dt", null, "Name"),
+                    React.createElement("dd", null, entity.name),
+                    React.createElement("dt", null, "Links"),
+                    React.createElement("dd", null,
+                        React.createElement("ul", null,
+                            React.createElement("li", null,
+                                React.createElement("a", { href: (0, utilities_4.getId)(entity.inbox).href }, "Inbox")),
+                            React.createElement("li", null,
+                                React.createElement("a", { href: (0, utilities_4.getId)(entity.outbox).href }, "Outbox"))))),
+                React.createElement("h2", null, "Follow"),
+                React.createElement(FollowForm_1.default, { follower: user, followee: entity }),
+                React.createElement("h2", null, "Followers"),
+                React.createElement("ul", null, followers.map(follower => {
+                    return (React.createElement("li", null,
+                        React.createElement("a", { href: (0, utilities_4.getId)(follower).href || '#' }, (0, utilities_4.getId)(follower).href)));
+                })),
+                React.createElement("h2", null, "Following"),
+                React.createElement("ul", null, following.map(followee => {
+                    return (React.createElement("li", null,
+                        React.createElement("a", { href: (0, utilities_4.getId)(followee).href || '#' }, (0, utilities_4.getId)(followee).href)));
+                })),
+                React.createElement("h2", null, "Requests"),
+                React.createElement("ul", null, requests.map(request => {
+                    return (React.createElement("li", null,
+                        React.createElement("a", { href: (0, utilities_4.getId)(request).href || '#' }, (0, utilities_4.getId)(request).href)));
+                })),
+                React.createElement("textarea", { defaultValue: JSON.stringify(entity, null, 2) })));
         };
     });
     define("endpoints/handleGetUserPage", ["require", "exports", "react", "react-dom/server", "@activity-kit/utilities", "@activity-kit/endpoints", "pages/UserEntityPage", "utils/globals", "utils/globals"], function (require, exports, React, Server, utilities_5, endpoints_2, UserEntityPage_1, globals_2) {
@@ -169,6 +215,34 @@
             res.send(result.body);
             res.end();
         });
+    });
+    define("endpoints/handleGetEntityPage", ["require", "exports", "react", "react-dom/server", "@activity-kit/utilities", "@activity-kit/endpoints", "utils/globals", "utils/globals"], function (require, exports, React, Server, utilities_6, endpoints_3, globals_3) {
+        "use strict";
+        Object.defineProperty(exports, "__esModule", { value: true });
+        function default_1(PageComponent) {
+            return (req, res) => __awaiter(this, void 0, void 0, function* () {
+                var _a;
+                const endpoint = new endpoints_3.EntityGetEndpoint(req.activitypub, {
+                    url: new URL(req.url, utilities_6.LOCAL_DOMAIN),
+                    returnHtml: (_a = req.headers.accept) === null || _a === void 0 ? void 0 : _a.includes('text/html'),
+                });
+                const render = (_b) => __awaiter(this, void 0, void 0, function* () {
+                    var args = __rest(_b, []);
+                    return globals_3.HTML_DOCTYPE + Server.renderToString(React.createElement(PageComponent, Object.assign({}, args, { user: req.user })));
+                });
+                const result = yield endpoint.respond(render).catch((err) => {
+                    console.error(err);
+                    return {
+                        statusCode: 500,
+                        json: {
+                            error: err.message,
+                        }
+                    };
+                });
+                res.respondWith(result);
+            });
+        }
+        exports.default = default_1;
     });
     define("components/LoginForm", ["require", "exports", "react", "utils/globals"], function (require, exports, React) {
         "use strict";
@@ -228,7 +302,7 @@
                         React.createElement("span", { className: "error-message" })),
                     React.createElement("button", { type: "submit" }, "Submit")))));
     });
-    define("components/CreatePostForm", ["require", "exports", "react", "@activity-kit/types", "@activity-kit/utilities", "utils/globals"], function (require, exports, React, AP, utilities_6) {
+    define("components/CreatePostForm", ["require", "exports", "react", "@activity-kit/types", "@activity-kit/utilities", "utils/globals"], function (require, exports, React, AP, utilities_7) {
         "use strict";
         Object.defineProperty(exports, "__esModule", { value: true });
         exports.default = ({ user }) => (React.createElement("tl-create-post-form", null,
@@ -237,7 +311,7 @@
                 React.createElement("link", { rel: "stylesheet", href: "/styles/forms.css" }),
                 React.createElement("link", { rel: "stylesheet", href: "/styles/buttons.css" }),
                 React.createElement("link", { rel: "stylesheet", href: "/styles/components/CreatePostForm.css" }),
-                React.createElement("form", { action: (0, utilities_6.getId)(user.outbox).href, noValidate: true },
+                React.createElement("form", { action: (0, utilities_7.getId)(user.outbox).href, noValidate: true },
                     React.createElement("select", { name: "type" }, Object.values(AP.ExtendedObjectTypes).map((type) => (React.createElement("option", { value: type, selected: type === AP.ExtendedObjectTypes.NOTE }, type)))),
                     React.createElement("label", null,
                         React.createElement("span", { className: "label-text" }, "Body Content"),
@@ -245,53 +319,33 @@
                         React.createElement("span", { className: "error-message" })),
                     React.createElement("button", { type: "submit" }, "Submit")))));
     });
-    define("pages/HomePage", ["require", "exports", "react", "components/LoginForm", "components/SignUpForm", "components/Header", "components/SidebarNav", "components/CreatePostForm"], function (require, exports, React, LoginForm_1, SignUpForm_1, Header_2, SidebarNav_2, CreatePostForm_1) {
+    define("pages/HomePage", ["require", "exports", "react", "components/PageChrome", "components/LoginForm", "components/SignUpForm", "components/CreatePostForm"], function (require, exports, React, PageChrome_2, LoginForm_1, SignUpForm_1, CreatePostForm_1) {
         "use strict";
         Object.defineProperty(exports, "__esModule", { value: true });
-        exports.default = ({ user }) => (React.createElement("html", { lang: "en" },
-            React.createElement("head", null,
-                React.createElement("meta", { charSet: "utf-8" }),
-                React.createElement("title", null, "Home Page"),
-                React.createElement("link", { href: "/styles/light-dom.css", rel: "stylesheet" })),
-            React.createElement("body", null,
-                React.createElement(Header_2.default, { user: user }),
-                React.createElement(SidebarNav_2.default, { user: user }),
-                React.createElement("main", null, user ? (React.createElement(React.Fragment, null,
-                    React.createElement("h1", null,
-                        "Welcome, ",
-                        user.name,
-                        "!"),
-                    React.createElement("h2", null, "Make a post."),
-                    React.createElement(CreatePostForm_1.default, { user: user }))) : (React.createElement(React.Fragment, null,
-                    React.createElement("h1", null, "Log in or sign up."),
-                    React.createElement("section", { role: "region", "aria-labelledby": "login-heading" },
-                        React.createElement("h2", { id: "login-heading" }, "Log In"),
-                        React.createElement(LoginForm_1.default, null)),
-                    React.createElement("hr", { role: "none" }),
-                    React.createElement("section", { role: "region", "aria-labelledby": "signup-heading" },
-                        React.createElement("h2", { id: "signup-heading" }, "Sign Up"),
-                        React.createElement(SignUpForm_1.default, null))))),
-                React.createElement("script", { src: "/scripts/index.js", type: "module" }))));
+        exports.default = ({ user }) => (React.createElement(PageChrome_2.default, { title: "Home Page", user: user }, user ? (React.createElement(React.Fragment, null,
+            React.createElement("h1", null,
+                "Welcome, ",
+                user.name,
+                "!"),
+            React.createElement("h2", null, "Make a post."),
+            React.createElement(CreatePostForm_1.default, { user: user }))) : (React.createElement(React.Fragment, null,
+            React.createElement("h1", null, "Log in or sign up."),
+            React.createElement("section", { role: "region", "aria-labelledby": "login-heading" },
+                React.createElement("h2", { id: "login-heading" }, "Log In"),
+                React.createElement(LoginForm_1.default, null)),
+            React.createElement("hr", { role: "none" }),
+            React.createElement("section", { role: "region", "aria-labelledby": "signup-heading" },
+                React.createElement("h2", { id: "signup-heading" }, "Sign Up"),
+                React.createElement(SignUpForm_1.default, null))))));
     });
-    define("pages/InboxEntityPage", ["require", "exports", "react", "components/Header", "components/SidebarNav", "@activity-kit/utilities"], function (require, exports, React, Header_3, SidebarNav_3, utilities_7) {
+    define("pages/InboxEntityPage", ["require", "exports", "react", "@activity-kit/utilities", "components/PageChrome"], function (require, exports, React, utilities_8, PageChrome_3) {
         "use strict";
         Object.defineProperty(exports, "__esModule", { value: true });
-        exports.default = ({ entity, user }) => {
-            return (React.createElement("html", { lang: "en" },
-                React.createElement("head", null,
-                    React.createElement("meta", { charSet: "utf-8" }),
-                    React.createElement("title", null, "Inbox - Activity Feed"),
-                    React.createElement("link", { href: "/styles/light-dom.css", rel: "stylesheet" })),
-                React.createElement("body", null,
-                    React.createElement(Header_3.default, { user: user }),
-                    React.createElement(SidebarNav_3.default, { user: user }),
-                    React.createElement("main", null,
-                        React.createElement("h1", null, entity.name),
-                        React.createElement("ul", null,
-                            React.createElement("li", null,
-                                React.createElement("a", { href: (0, utilities_7.getId)(entity.first).href }, "First Page")))),
-                    React.createElement("script", { src: "/scripts/index.js", type: "module" }))));
-        };
+        exports.default = ({ entity, user }) => (React.createElement(PageChrome_3.default, { title: entity.name || 'Inbox', user: user },
+            React.createElement("h1", null, entity.name),
+            React.createElement("ul", null,
+                React.createElement("li", null,
+                    React.createElement("a", { href: (0, utilities_8.getId)(entity.first).href }, "First Page")))));
     });
     define("components/CreateNoteFeedObject", ["require", "exports", "react", "utils/globals"], function (require, exports, React) {
         "use strict";
@@ -331,13 +385,13 @@
                     React.createElement("p", null, object.summary))));
         };
     });
-    define("components/CreateFeedObject", ["require", "exports", "react", "@activity-kit/types", "@activity-kit/type-utilities", "components/CreateNoteFeedObject", "components/CreatePersonFeedObject", "@activity-kit/utilities", "utils/globals"], function (require, exports, React, AP, type_utilities_1, CreateNoteFeedObject_1, CreatePersonFeedObject_1, utilities_8) {
+    define("components/CreateFeedObject", ["require", "exports", "react", "@activity-kit/types", "@activity-kit/type-utilities", "components/CreateNoteFeedObject", "components/CreatePersonFeedObject", "@activity-kit/utilities", "utils/globals"], function (require, exports, React, AP, type_utilities_1, CreateNoteFeedObject_1, CreatePersonFeedObject_1, utilities_9) {
         "use strict";
         Object.defineProperty(exports, "__esModule", { value: true });
         exports.default = ({ activity }) => {
-            const object = (0, utilities_8.getEntity)(activity.object);
+            const object = (0, utilities_9.getEntity)(activity.object);
             (0, type_utilities_1.assertIsApEntity)(object);
-            const actor = (0, utilities_8.getEntity)(activity.actor);
+            const actor = (0, utilities_9.getEntity)(activity.actor);
             (0, type_utilities_1.assertIsApActor)(actor);
             let objectHtml = (React.createElement("p", null, `The object type "${object.type}" is not supported.`));
             if ((0, type_utilities_1.isType)(object, AP.ExtendedObjectTypes.NOTE)) {
@@ -361,21 +415,14 @@
                     objectHtml)));
         };
     });
-    define("components/FollowFeedObject", ["require", "exports", "react", "@activity-kit/types", "@activity-kit/type-utilities", "components/CreateNoteFeedObject", "components/CreatePersonFeedObject", "@activity-kit/utilities", "utils/globals"], function (require, exports, React, AP, type_utilities_2, CreateNoteFeedObject_2, CreatePersonFeedObject_2, utilities_9) {
+    define("components/FollowFeedObject", ["require", "exports", "react", "@activity-kit/type-utilities", "@activity-kit/utilities", "utils/globals"], function (require, exports, React, type_utilities_2, utilities_10) {
         "use strict";
         Object.defineProperty(exports, "__esModule", { value: true });
         exports.default = ({ activity }) => {
-            const object = (0, utilities_9.getEntity)(activity.object);
-            (0, type_utilities_2.assertIsApEntity)(object);
-            const actor = (0, utilities_9.getEntity)(activity.actor);
+            const object = (0, utilities_10.getEntity)(activity.object);
+            (0, type_utilities_2.assertIsApActor)(object);
+            const actor = (0, utilities_10.getEntity)(activity.actor);
             (0, type_utilities_2.assertIsApActor)(actor);
-            let objectHtml = (React.createElement("p", null, `The object type "${object.type}" is not supported.`));
-            if ((0, type_utilities_2.isType)(object, AP.ExtendedObjectTypes.NOTE)) {
-                objectHtml = React.createElement(CreateNoteFeedObject_2.default, { object: object });
-            }
-            if ((0, type_utilities_2.isType)(object, AP.ActorTypes.PERSON)) {
-                objectHtml = React.createElement(CreatePersonFeedObject_2.default, { object: object });
-            }
             return (React.createElement("tl-create-feed-object", { role: "article" },
                 React.createElement("template", { shadowrootmode: "open" },
                     React.createElement("link", { rel: "stylesheet", href: "/styles/global.css" }),
@@ -386,9 +433,12 @@
                         activity.type,
                         " Activity by @",
                         actor.preferredUsername,
-                        " on ",
-                        activity.published.toLocaleString()),
-                    objectHtml)));
+                        " on",
+                        React.createElement("a", { href: (0, utilities_10.getId)(activity).href }, activity.published.toLocaleString())),
+                    "To:",
+                    React.createElement("a", { href: (0, utilities_10.getId)(object).href },
+                        "@",
+                        object.preferredUsername))));
         };
     });
     define("components/FeedObject", ["require", "exports", "react", "@activity-kit/types", "@activity-kit/type-utilities", "components/CreateFeedObject", "components/FollowFeedObject", "utils/globals"], function (require, exports, React, AP, type_utilities_3, CreateFeedObject_1, FollowFeedObject_1) {
@@ -411,10 +461,9 @@
     define("components/Feed", ["require", "exports", "react", "components/FeedObject", "utils/globals"], function (require, exports, React, FeedObject_1) {
         "use strict";
         Object.defineProperty(exports, "__esModule", { value: true });
-        [];
-        exports.default = ({ collection }) => {
-            const unorderedItems = collection.items ? (Array.isArray(collection.items) ? collection.items : [collection.items]) : [];
-            const orderedItems = collection.orderedItems ? (Array.isArray(collection.orderedItems) ? collection.orderedItems : [collection.orderedItems]) : [];
+        exports.default = ({ collectionPage: page }) => {
+            const unorderedItems = page.items ? (Array.isArray(page.items) ? page.items : [page.items]) : [];
+            const orderedItems = page.orderedItems ? (Array.isArray(page.orderedItems) ? page.orderedItems : [page.orderedItems]) : [];
             const items = orderedItems.length ? orderedItems : unorderedItems;
             const castIsLinkType = (item) => {
                 const types = Array.isArray(item.type) ? item.type : [item.type];
@@ -435,25 +484,21 @@
                     }))));
         };
     });
-    define("pages/InboxPageEntityPage", ["require", "exports", "react", "components/Header", "components/SidebarNav", "components/Feed"], function (require, exports, React, Header_4, SidebarNav_4, Feed_1) {
+    define("pages/InboxPageEntityPage", ["require", "exports", "react", "components/PageChrome", "components/Feed"], function (require, exports, React, PageChrome_4, Feed_1) {
         "use strict";
         Object.defineProperty(exports, "__esModule", { value: true });
-        exports.default = ({ entity, user }) => {
-            return (React.createElement("html", { lang: "en" },
-                React.createElement("head", null,
-                    React.createElement("meta", { charSet: "utf-8" }),
-                    React.createElement("title", null, "Inbox - Activity Feed"),
-                    React.createElement("link", { href: "/styles/light-dom.css", rel: "stylesheet" })),
-                React.createElement("body", null,
-                    React.createElement(Header_4.default, { user: user }),
-                    React.createElement(SidebarNav_4.default, { user: user }),
-                    React.createElement("main", null,
-                        React.createElement("h1", null, entity.name),
-                        React.createElement(Feed_1.default, { collection: entity })),
-                    React.createElement("script", { src: "/scripts/index.js", type: "module" }))));
-        };
+        exports.default = ({ entity, user }) => (React.createElement(PageChrome_4.default, { title: entity.name || 'Inbox', user: user },
+            React.createElement("h1", null, entity.name),
+            React.createElement(Feed_1.default, { collectionPage: entity })));
     });
-    define("index", ["require", "exports", "react", "react-dom/server", "express", "body-parser", "fs", "cookie-parser", "mongodb", "@activity-kit/db-mongo", "@activity-kit/auth-token", "@activity-kit/crypto-node", "@activity-kit/storage-ftp", "@activity-kit/endpoints", "@activity-kit/core", "@activity-kit/utilities", "utils/globals", "endpoints/handleGetCollectionPage", "endpoints/handleGetUserPage", "pages/HomePage", "pages/InboxEntityPage", "pages/InboxPageEntityPage", "pages/InboxEntityPage", "pages/InboxPageEntityPage"], function (require, exports, React, Server, express, bodyParser, fs, cookies, mongodb_1, db_mongo_1, auth_token_1, crypto_node_1, storage_ftp_1, endpoints_3, core_1, utilities_10, globals_3, handleGetCollectionPage_1, handleGetUserPage_1, HomePage_1, InboxEntityPage_1, InboxPageEntityPage_1, InboxEntityPage_2, InboxPageEntityPage_2) {
+    define("pages/FollowEntityPage", ["require", "exports", "react", "components/PageChrome"], function (require, exports, React, PageChrome_5) {
+        "use strict";
+        Object.defineProperty(exports, "__esModule", { value: true });
+        exports.default = ({ entity, user }) => (React.createElement(PageChrome_5.default, { title: "Follow Entity", user: user },
+            React.createElement("h1", null, "Follow Entity"),
+            React.createElement("textarea", { defaultValue: JSON.stringify(entity, null, 2) })));
+    });
+    define("index", ["require", "exports", "react", "react-dom/server", "express", "body-parser", "fs", "cookie-parser", "mongodb", "@activity-kit/db-mongo", "@activity-kit/auth-token", "@activity-kit/crypto-node", "@activity-kit/storage-ftp", "@activity-kit/endpoints", "@activity-kit/core", "@activity-kit/utilities", "utils/globals", "utils/middleware", "endpoints/handleGetUserPage", "endpoints/handleGetEntityPage", "pages/HomePage", "pages/InboxEntityPage", "pages/InboxPageEntityPage", "pages/InboxEntityPage", "pages/InboxPageEntityPage", "pages/FollowEntityPage"], function (require, exports, React, Server, express, bodyParser, fs, cookies, mongodb_1, db_mongo_1, auth_token_1, crypto_node_1, storage_ftp_1, endpoints_4, core_1, utilities_11, globals_4, middleware_1, handleGetUserPage_1, handleGetEntityPage_1, HomePage_1, InboxEntityPage_1, InboxPageEntityPage_1, InboxEntityPage_2, InboxPageEntityPage_2, FollowEntityPage_1) {
         "use strict";
         Object.defineProperty(exports, "__esModule", { value: true });
         (() => __awaiter(void 0, void 0, void 0, function* () {
@@ -480,22 +525,16 @@
                 db: mongoDbAdapter,
                 storage: ftpStorageAdapter,
             });
-            app.use((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-                req.activitypub = core;
-                const { __session: token } = req.cookies;
-                const userId = yield req.activitypub.getUserIdByToken(token);
-                const user = yield req.activitypub.getActorByUserId(userId);
-                req.user = user;
-                next();
-            }));
+            app.use((0, middleware_1.default)(core));
             app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-                res.send(globals_3.HTML_DOCTYPE + Server.renderToString(React.createElement(HomePage_1.default, { user: req.user })));
+                res.send(globals_4.HTML_DOCTYPE + Server.renderToString(React.createElement(HomePage_1.default, { user: req.user })));
                 res.end();
             }));
-            app.get('/@:username/inbox', (0, handleGetCollectionPage_1.default)(InboxEntityPage_1.default));
-            app.get('/@:username/inbox/page/:page', (0, handleGetCollectionPage_1.default)(InboxPageEntityPage_1.default));
-            app.get('/@:username/outbox', (0, handleGetCollectionPage_1.default)(InboxEntityPage_2.default));
-            app.get('/@:username/outbox/page/:page', (0, handleGetCollectionPage_1.default)(InboxPageEntityPage_2.default));
+            app.get('/@:username/inbox', (0, handleGetEntityPage_1.default)(InboxEntityPage_1.default));
+            app.get('/@:username/inbox/page/:page', (0, handleGetEntityPage_1.default)(InboxPageEntityPage_1.default));
+            app.get('/@:username/outbox', (0, handleGetEntityPage_1.default)(InboxEntityPage_2.default));
+            app.get('/@:username/outbox/page/:page', (0, handleGetEntityPage_1.default)(InboxPageEntityPage_2.default));
+            app.get('/follow/:guid', (0, handleGetEntityPage_1.default)(FollowEntityPage_1.default));
             app.get('/@:username', handleGetUserPage_1.default);
             app.post('/@:username/outbox', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 if (!req.user) {
@@ -503,11 +542,11 @@
                     res.end();
                     return;
                 }
-                const endpoint = new endpoints_3.OutboxPostEndpoint(core, {
+                const endpoint = new endpoints_4.OutboxPostEndpoint(core, {
                     body: req.body,
-                    url: new URL(req.url, utilities_10.LOCAL_DOMAIN),
+                    url: new URL(req.url, utilities_11.LOCAL_DOMAIN),
                     actor: req.user,
-                    routes: utilities_10.DEFAULT_ROUTES,
+                    routes: utilities_11.DEFAULT_ROUTES,
                 });
                 const result = yield endpoint.respond();
                 res.status(result.statusCode);
@@ -517,9 +556,9 @@
                 res.end();
             }));
             app.post('/user', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-                const endpoint = new endpoints_3.UserPostEndpoint(core, {
+                const endpoint = new endpoints_4.UserPostEndpoint(core, {
                     body: req.body,
-                    routes: utilities_10.DEFAULT_ROUTES,
+                    routes: utilities_11.DEFAULT_ROUTES,
                 });
                 const result = yield endpoint.respond();
                 res.status(result.statusCode);

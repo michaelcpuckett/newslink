@@ -1,8 +1,8 @@
 import * as React from 'react';
 import * as AP from  '@activity-kit/types';
 
-import PageChrome from '../components/Chrome/PageChrome';
-import LoginForm from '../components/LoginForm';
+import PageChrome from '../components/PageChrome';
+import LoginForm from '../components/Forms/LoginForm';
 import SignUpForm from '../components/Forms/SignUpForm';
 import CreatePostForm from '../components/Forms/CreatePostForm';
 

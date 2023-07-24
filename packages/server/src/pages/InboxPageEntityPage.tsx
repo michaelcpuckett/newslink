@@ -1,8 +1,8 @@
 import * as React from 'react';
 import * as AP from  '@activity-kit/types';
 
-import PageChrome from '../components/Chrome/PageChrome';
-import Feed from '../components/Feed/ActivityFeed';
+import PageChrome from '../components/PageChrome';
+import Feed from '../components/Feed';
 
 export default ({ entity, user }: { entity: AP.OrderedCollectionPage, user: AP.Actor | null }) => (
   <PageChrome

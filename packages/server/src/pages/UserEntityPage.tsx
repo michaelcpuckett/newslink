@@ -2,10 +2,10 @@ import * as React from 'react';
 import * as AP from '@activity-kit/types';
 import { getArray, getEntity, getId } from '@activity-kit/utilities';
 
-import PageChrome from '../components/Chrome/PageChrome';
+import PageChrome from '../components/PageChrome';
 import FollowForm from '../components/Forms/FollowForm';
-import FeedActivity from '../components/Feed/Activity';
-import FeedEntity from '../components/Feed/Entity';
+import Activity from '../components/Feed/Activity';
+import Entity from '../components/Feed/Entity';
 
 export default ({ entity, user }: { entity: AP.Actor, user: AP.Actor | null }) => {
   const getItems = (collection: AP.EitherCollection | null) => {
@@ -112,7 +112,7 @@ export default ({ entity, user }: { entity: AP.Actor, user: AP.Actor | null }) =
         }
 
         return (
-          <FeedActivity
+          <Entity
             key={getId(post).href}
             object={post}
           />
@@ -132,13 +132,22 @@ export default ({ entity, user }: { entity: AP.Actor, user: AP.Actor | null }) =
               {stream.name}
             </h2>
             <div role="list">
-              {items.map((item) => (
-                <FeedEntity
-                  role="listitem"
-                  key={getId(item).href}
-                  object={post}
-                />
-              ))}
+              {items.map((item) => {
+                if (item instanceof URL) {
+                  return (
+                    <a href={item.href}>
+                      {item.href}
+                    </a>
+                  );
+                }
+                
+                return (
+                  <Entity
+                    key={getId(item).href}
+                    object={item}
+                  />
+                );
+              })}
             </div>
           </React.Fragment>
         );

@@ -2,9 +2,8 @@ import * as React from 'react';
 import * as AP from  '@activity-kit/types';
 import { getId } from '@activity-kit/utilities';
 
-import Activity from './Activity';
+import Entity from './Entity';
 import '../../utils/globals';
-import { guard } from '@activity-kit/type-utilities';
 
 export default ({ collectionPage: page }: { collectionPage: AP.EitherCollectionPage }) => {
   const unorderedItems = page.items ? (Array.isArray(page.items) ? page.items : [page.items]) : [];
@@ -20,13 +19,9 @@ export default ({ collectionPage: page }: { collectionPage: AP.EitherCollectionP
           if (typeof item === 'string' || item instanceof URL) {
             throw new Error(`Received the Entity's ID instead of the Entity.`);
           }
-
-          if (!guard.isApActivity(item)) {
-            throw new Error(`Received a non-Activity object.`);
-          }
           
           return (
-            <Activity
+            <Entity
               key={getId(item).href}
               object={item}
             />

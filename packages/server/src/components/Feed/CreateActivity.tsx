@@ -1,10 +1,11 @@
 import * as React from 'react';
-import '../../utils/globals';
 import * as AP from '@activity-kit/types';
 import { guard, assert } from '@activity-kit/type-utilities';
+import {getEntity} from '@activity-kit/utilities';
+
 import CreateNote from './Note';
 import CreatePerson from './Person';
-import {getEntity} from '@activity-kit/utilities';
+import '../../utils/globals';
 
 export default ({ activity }: { activity: AP.Create }) => {
   const object = getEntity(activity.object);
@@ -30,7 +31,7 @@ export default ({ activity }: { activity: AP.Create }) => {
   }
 
   return (
-    <tl-create-activity role="article">
+    <tl-feed--create-activity role="article">
       <template shadowrootmode="open">
         <link rel="stylesheet" href="/styles/global.css" />
         <link rel="stylesheet" href="/styles/components/FeedObject.css" />
@@ -40,14 +41,14 @@ export default ({ activity }: { activity: AP.Create }) => {
         </header>
         {objectHtml}
       </template>
-    </tl-create-activity>
+    </tl-feed--create-activity>
   )
 };
 
 declare global {
   namespace JSX {
     interface IntrinsicElements {
-      ["tl-create-activity"]: React.DetailedHTMLProps<
+      ["tl-feed--create-activity"]: React.DetailedHTMLProps<
         React.HTMLAttributes<HTMLElement>,
         HTMLElement
       >;

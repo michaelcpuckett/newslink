@@ -1,10 +1,11 @@
 import * as React from 'react';
-import '../../utils/globals';
 import * as AP from  '@activity-kit/types';
+
+import '../../utils/globals';
 
 export default ({ object }: { object: AP.Person; }) => {
   return (
-    <tl-create-person-feed-object role="article">
+    <tl-feed--person>
       <template shadowrootmode="open">
         <link rel="stylesheet" href="/styles/global.css" />
         <link rel="stylesheet" href="/styles/components/FeedObject.css" />
@@ -31,14 +32,14 @@ export default ({ object }: { object: AP.Person; }) => {
         </dl>
         <p>{object.summary}</p>
       </template>
-    </tl-create-person-feed-object>
+    </tl-feed--person>
   )
 };
 
 declare global {
   namespace JSX {
     interface IntrinsicElements {
-      ["tl-create-person-feed-object"]: React.DetailedHTMLProps<
+      ["tl-feed--person"]: React.DetailedHTMLProps<
         React.HTMLAttributes<HTMLElement>,
         HTMLElement
       >;

@@ -1,8 +1,9 @@
 import * as React from 'react';
-import '../../utils/globals';
 import * as AP from '@activity-kit/types';
 import { assert } from '@activity-kit/type-utilities';
 import {getEntity, getId} from '@activity-kit/utilities';
+
+import '../../utils/globals';
 
 export default ({ activity }: { activity: AP.Follow }) => {
   const object = getEntity(activity.object);
@@ -14,7 +15,7 @@ export default ({ activity }: { activity: AP.Follow }) => {
   assert.isApActor(actor);
 
   return (
-    <tl-create-feed-object role="article">
+    <tl-feed--follow-activity role="article">
       <template shadowrootmode="open">
         <link rel="stylesheet" href="/styles/global.css" />
         <link rel="stylesheet" href="/styles/components/FeedObject.css" />
@@ -30,14 +31,14 @@ export default ({ activity }: { activity: AP.Follow }) => {
           @{object.preferredUsername}
         </a>
       </template>
-    </tl-create-feed-object>
-  )
+    </tl-feed--follow-activity>
+  );
 };
 
 declare global {
   namespace JSX {
     interface IntrinsicElements {
-      ["tl-create-feed-object"]: React.DetailedHTMLProps<
+      ["tl-feed--follow-activity"]: React.DetailedHTMLProps<
         React.HTMLAttributes<HTMLElement>,
         HTMLElement
       >;

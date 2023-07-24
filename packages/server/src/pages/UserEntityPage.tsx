@@ -4,7 +4,6 @@ import { getArray, getEntity, getId } from '@activity-kit/utilities';
 
 import PageChrome from '../components/PageChrome';
 import FollowForm from '../components/Forms/FollowForm';
-import Activity from '../components/Feed/Activity';
 import Entity from '../components/Feed/Entity';
 
 export default ({ entity, user }: { entity: AP.Actor, user: AP.Actor | null }) => {

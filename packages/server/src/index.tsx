@@ -97,15 +97,7 @@ import FollowEntityPage from './pages/FollowEntityPage';
       }
     );
 
-    const result = await endpoint.respond();
-
-    res.status(result.statusCode);
-
-    if (result.location) {
-      res.set('Location', result.location);
-    }
-
-    res.end();
+    res.respondWith(await endpoint.respond());
   });
 
   app.post('/user', async (req, res: express.Response) => {
@@ -117,11 +109,7 @@ import FollowEntityPage from './pages/FollowEntityPage';
       }
     );
 
-    const result = await endpoint.respond();
-
-    res.status(result.statusCode);
-    res.send(result.body);
-    res.end();
+    res.respondWith(await endpoint.respond());
   });
 
   app.listen(3000, () => {

@@ -16,8 +16,6 @@ import { DEFAULT_ROUTES, LOCAL_DOMAIN } from '@activity-kit/utilities';
 import { HTML_DOCTYPE } from './utils/globals';
 import middleware from './utils/middleware';
 
-import handleGetCollectionPage from './endpoints/handleGetCollectionPage';
-import handleGetUserPage from './endpoints/handleGetUserPage';
 import handleGetEntityPage from './endpoints/handleGetEntityPage';
 
 import HomePage from './pages/HomePage';
@@ -26,6 +24,7 @@ import InboxPageEntityPage from './pages/InboxPageEntityPage';
 import OutboxEntityPage from './pages/InboxEntityPage';
 import OutboxPageEntityPage from './pages/InboxPageEntityPage';
 import FollowEntityPage from './pages/FollowEntityPage';
+import UserEntityPage from './pages/UserEntityPage';
 
 (async () => {
   const app = express();
@@ -78,7 +77,7 @@ import FollowEntityPage from './pages/FollowEntityPage';
 
   app.get('/follow/:guid', handleGetEntityPage<AP.Follow>(FollowEntityPage));
 
-  app.get('/@:username', handleGetUserPage);
+  app.get('/@:username', handleGetEntityPage<AP.Actor>(UserEntityPage));
 
   app.post('/@:username/outbox', async (req: express.Request, res: express.Response) => {
     if (!req.user) {

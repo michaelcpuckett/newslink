@@ -10,7 +10,7 @@ import { MongoDbAdapter } from '@activity-kit/db-mongo';
 import { TokenAuthAdapter } from '@activity-kit/auth-token';
 import { NodeCryptoAdapter } from '@activity-kit/crypto-node';
 import { FtpStorageAdapter } from '@activity-kit/storage-ftp';
-import { EntityGetEndpoint, OutboxPostEndpoint, UserPostEndpoint } from '@activity-kit/endpoints';
+import { OutboxPostEndpoint, UserPostEndpoint } from '@activity-kit/endpoints';
 import { Core } from '@activity-kit/core';
 import { DEFAULT_ROUTES, LOCAL_DOMAIN } from '@activity-kit/utilities';
 import { HTML_DOCTYPE } from './utils/globals';
